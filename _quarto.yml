@@ -6,8 +6,9 @@ book:
   author: "Norah Jones"
   date: "10/10/2024"
   chapters:
-    - index.qmd
-    - intro.qmd
+    - Preface.qmd
+    - quick_start.qmd
+    - Preliminary.qmd
     - summary.qmd
     - references.qmd
 

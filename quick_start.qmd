@@ -1,0 +1,14 @@
+# Quick start
+
+
+### Step 1: Prepare the package and data
+
+### Step 2: Run BMSFA
+
+### Step 3: Post-processing
+
+### Step 4: Visualization
+
+```{r}
+1 + 1
+```

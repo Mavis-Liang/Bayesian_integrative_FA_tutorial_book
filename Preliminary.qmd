@@ -1,0 +1,15 @@
+# Preliminary
+
+## Factor models and multi-study setting
+
+This chapter introduce the theory behind factor models
+
+
+```{r}
+1 + 1
+```
+
+
+## Bayesian factor models
+
+## Bayesian integrative factor models
