@@ -1,5 +1,6 @@
 project:
   type: book
+  output-dir: docs
 
 book:
   title: "A tutorial of Bayesian Integrative Factor models"
