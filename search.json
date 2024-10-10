@@ -2,31 +2,51 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "book",
+    "title": "A tutorial of Bayesian Integrative Factor models",
     "section": "",
-    "text": "Preface\nThis is a Quarto book.\nTo learn more about Quarto books visit https://quarto.org/docs/books.\n\n1 + 1\n\n[1] 2",
+    "text": "Preface\nThis is the tutorial to guide statisticians to use Baysian integrative factor models.\n\n1 + 1\n\n[1] 2",
     "crumbs": [
       "Preface"
     ]
   },
   {
-    "objectID": "intro.html",
-    "href": "intro.html",
-    "title": "1  Introduction",
+    "objectID": "quick_start.html",
+    "href": "quick_start.html",
+    "title": "1  Quick start",
     "section": "",
-    "text": "This is a book created from markdown and executable code.\nSee Knuth (1984) for additional discussion of literate programming.\n\n1 + 1\n\n[1] 2\n\n\n\n\n\n\nKnuth, Donald E. 1984. “Literate Programming.” Comput. J. 27 (2): 97–111. https://doi.org/10.1093/comjnl/27.2.97.",
+    "text": "1.0.1 Step 1: Prepare the package and data\n\n\n1.0.2 Step 2: Run BMSFA\n\n\n1.0.3 Step 3: Post-processing\n\n\n1.0.4 Step 4: Visualization\n\n1 + 1\n\n[1] 2",
     "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Quick start</span>"
+    ]
+  },
+  {
+    "objectID": "Preliminary.html",
+    "href": "Preliminary.html",
+    "title": "2  Preliminary",
+    "section": "",
+    "text": "2.1 Factor models and multi-study setting\nThis chapter introduce the theory behind factor models\nSee Knuth (1984) for additional discussion of literate programming.\n1 + 1\n\n[1] 2",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Preliminary</span>"
+    ]
+  },
+  {
+    "objectID": "Preliminary.html#factor-models-and-multi-study-setting",
+    "href": "Preliminary.html#factor-models-and-multi-study-setting",
+    "title": "2  Preliminary",
+    "section": "",
+    "text": "Knuth, Donald E. 1984. “Literate Programming.” Comput. J. 27 (2): 97–111. https://doi.org/10.1093/comjnl/27.2.97.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Preliminary</span>"
     ]
   },
   {
     "objectID": "summary.html",
     "href": "summary.html",
-    "title": "2  Summary",
+    "title": "3  Summary",
     "section": "",
     "text": "In summary, this book has no content whatsoever.\n\n1 + 1\n\n[1] 2",
     "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Summary</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Summary</span>"
     ]
   },
   {
