@@ -1,13 +1,17 @@
 # Quick start
 
 
-### Step 1: Prepare the package and data
+**Step 1: Prepare the package and data**
 
-### Step 2: Run BMSFA
+A small simulated data can be downloaded here:
 
-### Step 3: Post-processing
+https://github.com/Mavis-Liang/Bayesian_integrative_FA_benchmark/raw/refs/heads/main/RDS/sen1_dense.rds
 
-### Step 4: Visualization
+**Step 2: Run BMSFA**
+
+**Step 3: Post-processing**
+
+**Step 4: Visualization**
 
 ```{r}
 1 + 1
