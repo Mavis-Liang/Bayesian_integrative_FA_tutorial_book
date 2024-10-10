@@ -54,7 +54,27 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -181,8 +201,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#factor-models-and-multi-study-setting" id="toc-factor-models-and-multi-study-setting" class="nav-link active" data-scroll-target="#factor-models-and-multi-study-setting"><span class="header-section-number">2.1</span> Factor models and multi-study setting</a></li>
-  <li><a href="#bayesian-factor-models" id="toc-bayesian-factor-models" class="nav-link" data-scroll-target="#bayesian-factor-models"><span class="header-section-number">2.2</span> Bayesian factor models</a></li>
-  <li><a href="#bayesian-integrative-factor-models" id="toc-bayesian-integrative-factor-models" class="nav-link" data-scroll-target="#bayesian-integrative-factor-models"><span class="header-section-number">2.3</span> Bayesian integrative factor models</a></li>
   </ul>
 </nav>
     </div>
@@ -211,20 +229,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="factor-models-and-multi-study-setting" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="factor-models-and-multi-study-setting"><span class="header-section-number">2.1</span> Factor models and multi-study setting</h2>
 <p>This chapter introduce the theory behind factor models</p>
+<p>See <span class="citation" data-cites="knuth84">Knuth (<a href="references.html#ref-knuth84" role="doc-biblioref">1984</a>)</span> for additional discussion of literate programming.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 2</code></pre>
 </div>
 </div>
-</section>
-<section id="bayesian-factor-models" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="bayesian-factor-models"><span class="header-section-number">2.2</span> Bayesian factor models</h2>
-</section>
-<section id="bayesian-integrative-factor-models" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="bayesian-integrative-factor-models"><span class="header-section-number">2.3</span> Bayesian integrative factor models</h2>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-knuth84" class="csl-entry" role="listitem">
+Knuth, Donald E. 1984. <span>“Literate Programming.”</span> <em>Comput. J.</em> 27 (2): 97–111. <a href="https://doi.org/10.1093/comjnl/27.2.97">https://doi.org/10.1093/comjnl/27.2.97</a>.
+</div>
+</div>
 </section>
 
 </main> <!-- /main -->
