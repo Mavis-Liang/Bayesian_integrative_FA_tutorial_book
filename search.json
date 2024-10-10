@@ -14,7 +14,7 @@
     "href": "quick_start.html",
     "title": "1  Quick start",
     "section": "",
-    "text": "Step 1: Prepare the package and data\nA small simulated data can be downloaded here:\nhttps://github.com/Mavis-Liang/Bayesian_integrative_FA_benchmark/raw/refs/heads/main/RDS/sen1_dense.rds\nStep 2: Run BMSFA\nStep 3: Post-processing\nStep 4: Visualization\n\n1 + 1\n\n[1] 2",
+    "text": "Step 1: Prepare the package and data\nA small simulated data can be downloaded here:\nRDS format\nStep 2: Run BMSFA\nStep 3: Post-processing\nStep 4: Visualization\n\n1 + 1\n\n[1] 2",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Quick start</span>"
     ]
