@@ -5,7 +5,7 @@
 
 A small simulated data can be downloaded here:
 
-https://github.com/Mavis-Liang/Bayesian_integrative_FA_benchmark/raw/refs/heads/main/RDS/sen1_dense.rds
+[RDS format](https://github.com/Mavis-Liang/Bayesian_integrative_FA_benchmark/raw/refs/heads/main/RDS/sen1_dense.rds)
 
 **Step 2: Run BMSFA**
 
