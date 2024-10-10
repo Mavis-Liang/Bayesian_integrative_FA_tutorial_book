@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Mavis Liang">
-<meta name="dcterms.date" content="2024-10-10">
 
-<title>A tutorial of Bayesian Integrative Factor models</title>
+<title>A tutorial of Bayesian Integrative Factor models - 1&nbsp; Quick start</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -66,7 +64,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./quick_start.html" rel="next">
+<link href="./Preliminary.html" rel="next">
+<link href="./index.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -116,7 +115,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Preface</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./quick_start.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Quick start</span></a></li></ol></nav>
         <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -143,13 +142,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./quick_start.html" class="sidebar-item-text sidebar-link">
+  <a href="./quick_start.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Quick start</span></span></a>
   </div>
 </li>
@@ -181,7 +180,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a></li>
+  <li><a href="#step-1-prepare-the-package-and-data" id="toc-step-1-prepare-the-package-and-data" class="nav-link active" data-scroll-target="#step-1-prepare-the-package-and-data"><span class="header-section-number">1.0.1</span> Step 1: Prepare the package and data</a></li>
+  <li><a href="#step-2-run-bmsfa" id="toc-step-2-run-bmsfa" class="nav-link" data-scroll-target="#step-2-run-bmsfa"><span class="header-section-number">1.0.2</span> Step 2: Run BMSFA</a></li>
+  <li><a href="#step-3-post-processing" id="toc-step-3-post-processing" class="nav-link" data-scroll-target="#step-3-post-processing"><span class="header-section-number">1.0.3</span> Step 3: Post-processing</a></li>
+  <li><a href="#step-4-visualization" id="toc-step-4-visualization" class="nav-link" data-scroll-target="#step-4-visualization"><span class="header-section-number">1.0.4</span> Step 4: Visualization</a></li>
   </ul>
 </nav>
     </div>
@@ -190,26 +192,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">A tutorial of Bayesian Integrative Factor models</h1>
+<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Quick start</span></h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Mavis Liang </p>
-          </div>
-  </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">October 10, 2024</p>
-    </div>
-  </div>
   
     
   </div>
@@ -219,9 +209,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="preface" class="level1 unnumbered">
-<h1 class="unnumbered">Preface</h1>
-<p>This is the tutorial to guide statisticians to use Baysian integrative factor models.</p>
+<section id="step-1-prepare-the-package-and-data" class="level3" data-number="1.0.1">
+<h3 data-number="1.0.1" class="anchored" data-anchor-id="step-1-prepare-the-package-and-data"><span class="header-section-number">1.0.1</span> Step 1: Prepare the package and data</h3>
+</section>
+<section id="step-2-run-bmsfa" class="level3" data-number="1.0.2">
+<h3 data-number="1.0.2" class="anchored" data-anchor-id="step-2-run-bmsfa"><span class="header-section-number">1.0.2</span> Step 2: Run BMSFA</h3>
+</section>
+<section id="step-3-post-processing" class="level3" data-number="1.0.3">
+<h3 data-number="1.0.3" class="anchored" data-anchor-id="step-3-post-processing"><span class="header-section-number">1.0.3</span> Step 3: Post-processing</h3>
+</section>
+<section id="step-4-visualization" class="level3" data-number="1.0.4">
+<h3 data-number="1.0.4" class="anchored" data-anchor-id="step-4-visualization"><span class="header-section-number">1.0.4</span> Step 4: Visualization</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -644,10 +642,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./index.html" class="pagination-link" aria-label="Preface">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Preface</span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./quick_start.html" class="pagination-link" aria-label="Quick start">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Quick start</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./Preliminary.html" class="pagination-link" aria-label="Preliminary">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Preliminary</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

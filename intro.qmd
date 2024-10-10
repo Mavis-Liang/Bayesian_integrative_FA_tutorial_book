@@ -5,11 +5,9 @@
 This chapter introduce the theory behind factor models
 
 
+
+See @knuth84 for additional discussion of literate programming.
+
 ```{r}
 1 + 1
 ```
-
-
-## Bayesian factor models
-
-## Bayesian integrative factor models
