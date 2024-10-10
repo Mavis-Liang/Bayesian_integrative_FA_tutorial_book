@@ -1,0 +1,15 @@
+{
+  "hash": "8351cb0973d0500adf48fcc2e154c640",
+  "result": {
+    "engine": "knitr",
+    "markdown": "# Quick start\n\n\n**Step 1: Prepare the package and data**\n\nA small simulated data can be downloaded here:\n\nhttps://github.com/Mavis-Liang/Bayesian_integrative_FA_benchmark/raw/refs/heads/main/RDS/sen1_dense.rds\n\n**Step 2: Run BMSFA**\n\n**Step 3: Post-processing**\n\n**Step 4: Visualization**\n\n\n::: {.cell}\n\n```{.r .cell-code}\n1 + 1\n```\n\n::: {.cell-output .cell-output-stdout}\n\n```\n[1] 2\n```\n\n\n:::\n:::",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
