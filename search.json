@@ -2,7 +2,7 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "A tutorial of Bayesian Integrative Factor models",
+    "title": "A tutorial for Bayesian Integrative Factor models",
     "section": "",
     "text": "Preface\nThis is the tutorial to guide statisticians to use Baysian integrative factor models.\n\n1 + 1\n\n[1] 2",
     "crumbs": [
@@ -14,7 +14,7 @@
     "href": "quick_start.html",
     "title": "1  Quick start",
     "section": "",
-    "text": "1.0.1 Step 1: Prepare the package and data\n\n\n1.0.2 Step 2: Run BMSFA\n\n\n1.0.3 Step 3: Post-processing\n\n\n1.0.4 Step 4: Visualization\n\n1 + 1\n\n[1] 2",
+    "text": "Step 1: Prepare the package and data\nA small simulated data can be downloaded here:\nhttps://github.com/Mavis-Liang/Bayesian_integrative_FA_benchmark/raw/refs/heads/main/RDS/sen1_dense.rds\nStep 2: Run BMSFA\nStep 3: Post-processing\nStep 4: Visualization\n\n1 + 1\n\n[1] 2",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Quick start</span>"
     ]
