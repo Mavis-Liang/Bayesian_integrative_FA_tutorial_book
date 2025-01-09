@@ -44,7 +44,17 @@
     "href": "Nutrition.html",
     "title": "3  Case study: nutrition data",
     "section": "",
-    "text": "1 + 1\n\n[1] 2",
+    "text": "3.1 Loading and previewing the data\nThe data used in this section is from… This data is not publicly available. Please contact the authors of the original study for access.\nload(\"./Data/dataLAT_projale2.rda\")\nThe resulting object is a list of 6 data frames, each corresponding to a different study. Each data frame contains information about the nutritional intake of individuals, and the columns represent different nutrients. From Study 1 to Study 6, the number of individuals (\\(N_s\\)) are 1364, 1517, 2210, 5184, 2478, and 959, respectively, and the number of nutrients (\\(P\\)) are all 42. Let’s take a look at the first few rows of the first data frame to get an idea of the data structure.\n# Check how many studies in the list\nlength(X_s2)\n\n[1] 6\n\n# Dimension of each study\nlapply(X_s2, dim)\n\n[[1]]\n[1] 1364   42\n\n[[2]]\n[1] 1517   42\n\n[[3]]\n[1] 2210   42\n\n[[4]]\n[1] 5184   42\n\n[[5]]\n[1] 2478   42\n\n[[6]]\n[1] 959  42\n\nX_s2[[1]][1:5, 1:5]\n\n  Animal Protein (g) Vegetable Protein (g) Cholesterol (mg)  SCSFA MCSFA\n1            28.9560               14.7440          256.761 0.2665 0.939\n2            33.6675                8.9710          104.217 0.2180 0.520\n3            70.0000               31.0635          207.902 0.9845 1.692\n4            20.6700               13.8240          148.921 0.0625 0.239\n5            15.4250               10.5550           65.060 0.0090 0.033",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Case study: nutrition data</span>"
+    ]
+  },
+  {
+    "objectID": "Nutrition.html#data-preprocessing",
+    "href": "Nutrition.html#data-preprocessing",
+    "title": "3  Case study: nutrition data",
+    "section": "3.2 Data preprocessing",
+    "text": "3.2 Data preprocessing\n\ncount_na_and_negatives &lt;- function(df) {\n  # Count NA values\n  na_count &lt;- sum(is.na(df))\n  # Count negative values\n  negative_count &lt;- sum(df &lt; 0, na.rm = TRUE)\n  \n  # Print counts\n  cat(\"Number of NAs:\", na_count, \"\\n\")\n  cat(\"Number of negative values:\", negative_count, \"\\n\")\n}\ninvisible(lapply(X_s2, count_na_and_negatives))\n\nNumber of NAs: 1344 \nNumber of negative values: 0 \nNumber of NAs: 1344 \nNumber of negative values: 1 \nNumber of NAs: 1344 \nNumber of negative values: 0 \nNumber of NAs: 1344 \nNumber of negative values: 2 \nNumber of NAs: 1344 \nNumber of negative values: 1 \nNumber of NAs: 1344 \nNumber of negative values: 0 \n\n\n\nprocess_study_data &lt;- function(df) {\n  # Remove rows where all values are NA\n  cleaned_df &lt;- df[!apply(df, 1, function(row) all(is.na(row))), , drop = FALSE]\n  # Count remaining rows\n  remaining_rows &lt;- nrow(cleaned_df)\n  # Print results for the study\n  cat(\"Remaining rows:\", remaining_rows, \"\\n\")\n  return(cleaned_df)\n}\n\nY_list &lt;- lapply(X_s2, process_study_data)\n\nRemaining rows: 1332 \nRemaining rows: 1485 \nRemaining rows: 2178 \nRemaining rows: 5152 \nRemaining rows: 2446 \nRemaining rows: 927 \n\n# Replace negative values with 0, then log(x+0.01) + 0.01\nreplace_negatives &lt;- function(df) {\n  # Replace negative values with 0\n  df[df &lt; 0] &lt;- 0\n  # Apply log transformation\n  transformed_df &lt;- log(df + 0.01)\n  return(transformed_df)\n}\n\nZ_list &lt;- lapply(Y_list, replace_negatives)\n#saveRDS(Z_list, \"./Data/nutrition_processed.rds\")",
     "crumbs": [
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>Case study: nutrition data</span>"
     ]
