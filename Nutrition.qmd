@@ -1,0 +1,5 @@
+# Case study: nutrition data
+
+```{r}
+1 + 1
+```

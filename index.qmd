@@ -2,7 +2,6 @@
 
 This is the tutorial to guide statisticians to use Baysian integrative factor models.
 
-
 ```{r}
 1 + 1
 ```

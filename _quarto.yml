@@ -10,6 +10,7 @@ book:
     - index.qmd
     - quick_start.qmd
     - Preliminary.qmd
+    - Nutrtion.qmd
     - summary.qmd
     - references.qmd
 
