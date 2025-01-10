@@ -1,0 +1,172 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "A Tutorial for Bayesian Integrative Factor Models",
+    "section": "",
+    "text": "Preface\nThis is the tutorial to guide statisticians to use Baysian integrative factor models.\n\n1 + 1\n\n[1] 2",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "Preliminary.html",
+    "href": "Preliminary.html",
+    "title": "1  Preliminary",
+    "section": "",
+    "text": "1.1 Factor models and multi-study setting\nThis chapter introduce the theory behind factor models\nSee Knuth (1984) for additional discussion of literate programming.\n1 + 1\n\n[1] 2",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Preliminary</span>"
+    ]
+  },
+  {
+    "objectID": "Preliminary.html#factor-models-and-multi-study-setting",
+    "href": "Preliminary.html#factor-models-and-multi-study-setting",
+    "title": "1  Preliminary",
+    "section": "",
+    "text": "Knuth, Donald E. 1984. “Literate Programming.” Comput. J. 27 (2): 97–111. https://doi.org/10.1093/comjnl/27.2.97.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Preliminary</span>"
+    ]
+  },
+  {
+    "objectID": "quick_start.html",
+    "href": "quick_start.html",
+    "title": "2  Quick start",
+    "section": "",
+    "text": "Step 1: Prepare the package and data\nA small simulated data can be downloaded here:\nRDS format\nStep 2: Run BMSFA\nStep 3: Post-processing\nStep 4: Visualization\n\n1 + 1\n\n[1] 2",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Quick start</span>"
+    ]
+  },
+  {
+    "objectID": "Installation.html",
+    "href": "Installation.html",
+    "title": "3  Package Installation",
+    "section": "",
+    "text": "3.1 Stack FA, Ind FA, and BMSFA",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Package Installation</span>"
+    ]
+  },
+  {
+    "objectID": "Installation.html#pfa",
+    "href": "Installation.html#pfa",
+    "title": "3  Package Installation",
+    "section": "3.2 PFA",
+    "text": "3.2 PFA\nPFA does not provide any downloadable R packages and we need to download the R scripts from their GitHub repository, put them in the same directory as the main script, and source them for use.\nWe only need the three files: FBPFA-PFA.R, FBPFA-PFA with fixed latent dim.R, and PFA.cpp, which can be found in . The FBPFA-PFA.R file contains the full Bayesian inference algorithm for the PFA model, directly set the latent dimensions equal to the dimensions or the original data. The FBPFA-PFA with fixed latent dim.R file contains the same algorithm that requires to set numbers of common factors \\(K\\). We also notice that two version of the models are both PFA(), and some functions in the FBPFA-PFA with fixed latent dim.R file depends on the FBPFA-PFA.R file. Therefore, since we want to run the dimension reduction version of the model, we must source the FBPFA-PFA.R file first, and then source the FBPFA-PFA with fixed latent dim.R file.\n\n# Suppose the files are in the same directory as the main script\nsource(\"FBPFA-PFA.R\")\n\nWarning: package 'expm' was built under R version 4.4.2\n\n\nLoading required package: Matrix\n\n\n\nAttaching package: 'Matrix'\n\n\nThe following objects are masked from 'package:pracma':\n\n    expm, lu, tril, triu\n\n\n\nAttaching package: 'expm'\n\n\nThe following object is masked from 'package:Matrix':\n\n    expm\n\n\nThe following objects are masked from 'package:pracma':\n\n    expm, logm, sqrtm\n\n\nWarning: package 'RcppArmadillo' was built under R version 4.4.2\n\nsource(\"FBPFA-PFA with fixed latent dim.R\")",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Package Installation</span>"
+    ]
+  },
+  {
+    "objectID": "Installation.html#mom-ss",
+    "href": "Installation.html#mom-ss",
+    "title": "3  Package Installation",
+    "section": "3.3 MOM-SS",
+    "text": "3.3 MOM-SS",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Package Installation</span>"
+    ]
+  },
+  {
+    "objectID": "Installation.html#sufa",
+    "href": "Installation.html#sufa",
+    "title": "3  Package Installation",
+    "section": "3.4 SUFA",
+    "text": "3.4 SUFA",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Package Installation</span>"
+    ]
+  },
+  {
+    "objectID": "Installation.html#tetris",
+    "href": "Installation.html#tetris",
+    "title": "3  Package Installation",
+    "section": "3.5 Tetris",
+    "text": "3.5 Tetris",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Package Installation</span>"
+    ]
+  },
+  {
+    "objectID": "Nutrition.html",
+    "href": "Nutrition.html",
+    "title": "4  Case study: nutrition data",
+    "section": "",
+    "text": "4.1 Loading and previewing the data\nThe data used in this section is from… This data is not publicly available. Please contact the authors of the original study for access.\nload(\"./Data/dataLAT_projale2.rda\")\nThe resulting object is a list of 6 data frames, each corresponding to a different study. Each data frame contains information about the nutritional intake of individuals, and the columns represent different nutrients. From Study 1 to Study 6, the number of individuals (\\(N_s\\)) are 1364, 1517, 2210, 5184, 2478, and 959, respectively, and the number of nutrients (\\(P\\)) are all 42.\n# Check how many studies in the list\nlength(X_s2)\n\n[1] 6\n\n# Dimension of each study\nlapply(X_s2, dim)\n\n[[1]]\n[1] 1364   42\n\n[[2]]\n[1] 1517   42\n\n[[3]]\n[1] 2210   42\n\n[[4]]\n[1] 5184   42\n\n[[5]]\n[1] 2478   42\n\n[[6]]\n[1] 959  42\nLet’s take a look at the first few rows of the first data frame to get an idea of the data structure.\nX_s2[[1]][1:5, 1:5]\n\n  Animal Protein (g) Vegetable Protein (g) Cholesterol (mg)  SCSFA MCSFA\n1            28.9560               14.7440          256.761 0.2665 0.939\n2            33.6675                8.9710          104.217 0.2180 0.520\n3            70.0000               31.0635          207.902 0.9845 1.692\n4            20.6700               13.8240          148.921 0.0625 0.239\n5            15.4250               10.5550           65.060 0.0090 0.033\nWe note that the data we have available is different from the original data (cite). The original data is a collection of 12 studies, and there are known covariates for each individuals, like the one we simulated in the previous section. However, for the purpose of this case study, the data we used are collapsed into 6 studies, and only the nutritional intake data are available.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Case study: nutrition data</span>"
+    ]
+  },
+  {
+    "objectID": "Nutrition.html#data-preprocessing",
+    "href": "Nutrition.html#data-preprocessing",
+    "title": "4  Case study: nutrition data",
+    "section": "4.2 Data preprocessing",
+    "text": "4.2 Data preprocessing\nSome individuals have missing values for all nutrients, and we will remove these individuals from the data. We will also replace negative values with 0, since nutrition intake cannot be less than 0. Then apply a log transformation to the data.\nWe first count how many NA values and negative values are in each study.\n\ncount_na_and_negatives &lt;- function(df) {\n  # Count NA values\n  na_count &lt;- sum(is.na(df))\n  # Count negative values\n  negative_count &lt;- sum(df &lt; 0, na.rm = TRUE)\n  \n  # Print counts\n  cat(\"Number of NAs:\", na_count, \"\\n\")\n  cat(\"Number of negative values:\", negative_count, \"\\n\")\n}\ninvisible(lapply(X_s2, count_na_and_negatives))\n\nNumber of NAs: 1344 \nNumber of negative values: 0 \nNumber of NAs: 1344 \nNumber of negative values: 1 \nNumber of NAs: 1344 \nNumber of negative values: 0 \nNumber of NAs: 1344 \nNumber of negative values: 2 \nNumber of NAs: 1344 \nNumber of negative values: 1 \nNumber of NAs: 1344 \nNumber of negative values: 0 \n\n\nWe will define a function to process the data, which removes rows where all values are NA. We also define a function that replaces negative values with 0, and applies a log transformation to the data.\n\nprocess_study_data &lt;- function(df) {\n  # Remove rows where all values are NA\n  cleaned_df &lt;- df[!apply(df, 1, function(row) all(is.na(row))), , drop = FALSE]\n  # Count remaining rows\n  remaining_rows &lt;- nrow(cleaned_df)\n  # Print results for the study\n  cat(\"Remaining rows:\", remaining_rows, \"\\n\")\n  return(cleaned_df)\n}\n\nY_list &lt;- lapply(X_s2, process_study_data)\n\nRemaining rows: 1332 \nRemaining rows: 1485 \nRemaining rows: 2178 \nRemaining rows: 5152 \nRemaining rows: 2446 \nRemaining rows: 927 \n\n# Replace negative values with 0, then log(x+0.01) + 0.01\nreplace_negatives &lt;- function(df) {\n  # Replace negative values with 0\n  df[df &lt; 0] &lt;- 0\n  # Apply log transformation. Add 0.01 to avoid log(0).\n  transformed_df &lt;- log(df + 0.01)\n  return(transformed_df)\n}\n\nY_list &lt;- lapply(Y_list, replace_negatives)\n\nThe numbers of individuals in each study left for analysis (\\(N_s\\)) are 1332, 1485, 2178, 5152, 2446, and 927, respectively.\n\n# Check the processed data\ninvisible(lapply(Y_list, count_na_and_negatives))\n\nNumber of NAs: 0 \nNumber of negative values: 11910 \nNumber of NAs: 0 \nNumber of negative values: 11222 \nNumber of NAs: 0 \nNumber of negative values: 15006 \nNumber of NAs: 0 \nNumber of negative values: 36230 \nNumber of NAs: 0 \nNumber of negative values: 19349 \nNumber of NAs: 0 \nNumber of negative values: 6707 \n\n\nNow we don’t have any NA values or negative values in the data.\nFor some models, we will need to standardize the data. We will standardize the data for each study separately.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Case study: nutrition data</span>"
+    ]
+  },
+  {
+    "objectID": "Nutrition.html#model-fitting",
+    "href": "Nutrition.html#model-fitting",
+    "title": "4  Case study: nutrition data",
+    "section": "4.3 Model fitting",
+    "text": "4.3 Model fitting",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Case study: nutrition data</span>"
+    ]
+  },
+  {
+    "objectID": "Nutrition.html#post-processing",
+    "href": "Nutrition.html#post-processing",
+    "title": "4  Case study: nutrition data",
+    "section": "4.4 Post processing",
+    "text": "4.4 Post processing",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Case study: nutrition data</span>"
+    ]
+  },
+  {
+    "objectID": "Nutrition.html#visualization",
+    "href": "Nutrition.html#visualization",
+    "title": "4  Case study: nutrition data",
+    "section": "4.5 Visualization",
+    "text": "4.5 Visualization",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Case study: nutrition data</span>"
+    ]
+  },
+  {
+    "objectID": "Nutrition.html#mean-squared-error-mse",
+    "href": "Nutrition.html#mean-squared-error-mse",
+    "title": "4  Case study: nutrition data",
+    "section": "4.6 Mean squared error (MSE)",
+    "text": "4.6 Mean squared error (MSE)",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Case study: nutrition data</span>"
+    ]
+  },
+  {
+    "objectID": "summary.html",
+    "href": "summary.html",
+    "title": "5  Summary",
+    "section": "",
+    "text": "In summary, this book has no content whatsoever.\n\n1 + 1\n\n[1] 2",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Summary</span>"
+    ]
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "References",
+    "section": "",
+    "text": "Knuth, Donald E. 1984. “Literate Programming.” Comput.\nJ. 27 (2): 97–111. https://doi.org/10.1093/comjnl/27.2.97.",
+    "crumbs": [
+      "References"
+    ]
+  }
+]

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>A Tutorial for Bayesian Integrative Factor Models - 1&nbsp; Preliminary</title>
+<title>A Tutorial for Bayesian Integrative Factor Models - 3&nbsp; Package Installation</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -54,27 +54,7 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-/* CSS for citations */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-  margin-bottom: 0em;
-}
-.hanging-indent div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}</style>
+</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -84,8 +64,8 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./quick_start.html" rel="next">
-<link href="./index.html" rel="prev">
+<link href="./Nutrition.html" rel="next">
+<link href="./quick_start.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -123,6 +103,35 @@ div.csl-indent {
   }
 }</script>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -135,7 +144,7 @@ div.csl-indent {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Preliminary.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Preliminary</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./Installation.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Package Installation</span></a></li></ol></nav>
         <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -168,7 +177,7 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./Preliminary.html" class="sidebar-item-text sidebar-link active">
+  <a href="./Preliminary.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Preliminary</span></span></a>
   </div>
 </li>
@@ -180,7 +189,7 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./Installation.html" class="sidebar-item-text sidebar-link">
+  <a href="./Installation.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Package Installation</span></span></a>
   </div>
 </li>
@@ -212,7 +221,11 @@ div.csl-indent {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#factor-models-and-multi-study-setting" id="toc-factor-models-and-multi-study-setting" class="nav-link active" data-scroll-target="#factor-models-and-multi-study-setting"><span class="header-section-number">1.1</span> Factor models and multi-study setting</a></li>
+  <li><a href="#stack-fa-ind-fa-and-bmsfa" id="toc-stack-fa-ind-fa-and-bmsfa" class="nav-link active" data-scroll-target="#stack-fa-ind-fa-and-bmsfa"><span class="header-section-number">3.1</span> Stack FA, Ind FA, and BMSFA</a></li>
+  <li><a href="#pfa" id="toc-pfa" class="nav-link" data-scroll-target="#pfa"><span class="header-section-number">3.2</span> PFA</a></li>
+  <li><a href="#mom-ss" id="toc-mom-ss" class="nav-link" data-scroll-target="#mom-ss"><span class="header-section-number">3.3</span> MOM-SS</a></li>
+  <li><a href="#sufa" id="toc-sufa" class="nav-link" data-scroll-target="#sufa"><span class="header-section-number">3.4</span> SUFA</a></li>
+  <li><a href="#tetris" id="toc-tetris" class="nav-link" data-scroll-target="#tetris"><span class="header-section-number">3.5</span> Tetris</a></li>
   </ul>
 </nav>
     </div>
@@ -221,7 +234,7 @@ div.csl-indent {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Preliminary</span></h1>
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Package Installation</span></h1>
 </div>
 
 
@@ -238,23 +251,62 @@ div.csl-indent {
 </header>
 
 
-<section id="factor-models-and-multi-study-setting" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="factor-models-and-multi-study-setting"><span class="header-section-number">1.1</span> Factor models and multi-study setting</h2>
-<p>This chapter introduce the theory behind factor models</p>
-<p>See <span class="citation" data-cites="knuth84">Knuth (<a href="references.html#ref-knuth84" role="doc-biblioref">1984</a>)</span> for additional discussion of literate programming.</p>
+<p>I have this separate section to introduce the package installation because installing some packages requires extra efforts.</p>
+<section id="stack-fa-ind-fa-and-bmsfa" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="stack-fa-ind-fa-and-bmsfa"><span class="header-section-number">3.1</span> Stack FA, Ind FA, and BMSFA</h2>
+</section>
+<section id="pfa" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="pfa"><span class="header-section-number">3.2</span> PFA</h2>
+<p>PFA does not provide any downloadable R packages and we need to download the R scripts from their GitHub repository, put them in the same directory as the main script, and source them for use.</p>
+<p>We only need the three files: <code>FBPFA-PFA.R</code>, <code>FBPFA-PFA with fixed latent dim.R</code>, and <code>PFA.cpp</code>, which can be found in . The <code>FBPFA-PFA.R</code> file contains the full Bayesian inference algorithm for the PFA model, directly set the latent dimensions equal to the dimensions or the original data. The <code>FBPFA-PFA with fixed latent dim.R</code> file contains the same algorithm that requires to set numbers of common factors <span class="math inline">\(K\)</span>. We also notice that two version of the models are both <code>PFA()</code>, and some functions in the <code>FBPFA-PFA with fixed latent dim.R</code> file depends on the <code>FBPFA-PFA.R</code> file. Therefore, since we want to run the dimension reduction version of the model, we must source the <code>FBPFA-PFA.R</code> file first, and then source the <code>FBPFA-PFA with fixed latent dim.R</code> file.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Suppose the files are in the same directory as the main script</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"FBPFA-PFA.R"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'expm' was built under R version 4.4.2</code></pre>
 </div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: Matrix</code></pre>
 </div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'Matrix'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:pracma':
+
+    expm, lu, tril, triu</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'expm'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:Matrix':
+
+    expm</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:pracma':
+
+    expm, logm, sqrtm</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'RcppArmadillo' was built under R version 4.4.2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"FBPFA-PFA with fixed latent dim.R"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="mom-ss" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="mom-ss"><span class="header-section-number">3.3</span> MOM-SS</h2>
+</section>
+<section id="sufa" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="sufa"><span class="header-section-number">3.4</span> SUFA</h2>
+</section>
+<section id="tetris" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="tetris"><span class="header-section-number">3.5</span> Tetris</h2>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
-<div id="ref-knuth84" class="csl-entry" role="listitem">
-Knuth, Donald E. 1984. <span>“Literate Programming.”</span> <em>Comput. J.</em> 27 (2): 97–111. <a href="https://doi.org/10.1093/comjnl/27.2.97">https://doi.org/10.1093/comjnl/27.2.97</a>.
-</div>
-</div>
 </section>
 
 </main> <!-- /main -->
@@ -669,13 +721,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./index.html" class="pagination-link" aria-label="Preface">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Preface</span>
+      <a href="./quick_start.html" class="pagination-link" aria-label="Quick start">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Quick start</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./quick_start.html" class="pagination-link" aria-label="Quick start">
-        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Quick start</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./Nutrition.html" class="pagination-link" aria-label="Case study: nutrition data">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Case study: nutrition data</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
