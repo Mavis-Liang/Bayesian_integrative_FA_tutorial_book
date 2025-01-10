@@ -261,40 +261,8 @@ window.Quarto = {
 <p>We only need the three files: <code>FBPFA-PFA.R</code>, <code>FBPFA-PFA with fixed latent dim.R</code>, and <code>PFA.cpp</code>, which can be found in . The <code>FBPFA-PFA.R</code> file contains the full Bayesian inference algorithm for the PFA model, directly set the latent dimensions equal to the dimensions or the original data. The <code>FBPFA-PFA with fixed latent dim.R</code> file contains the same algorithm that requires to set numbers of common factors <span class="math inline">\(K\)</span>. We also notice that two version of the models are both <code>PFA()</code>, and some functions in the <code>FBPFA-PFA with fixed latent dim.R</code> file depends on the <code>FBPFA-PFA.R</code> file. Therefore, since we want to run the dimension reduction version of the model, we must source the <code>FBPFA-PFA.R</code> file first, and then source the <code>FBPFA-PFA with fixed latent dim.R</code> file.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Suppose the files are in the same directory as the main script</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"FBPFA-PFA.R"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'expm' was built under R version 4.4.2</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: Matrix</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'Matrix'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:pracma':
-
-    expm, lu, tril, triu</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'expm'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following object is masked from 'package:Matrix':
-
-    expm</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:pracma':
-
-    expm, logm, sqrtm</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'RcppArmadillo' was built under R version 4.4.2</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"FBPFA-PFA with fixed latent dim.R"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"FBPFA-PFA.R"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"FBPFA-PFA with fixed latent dim.R"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="mom-ss" class="level2" data-number="3.3">

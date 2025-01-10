@@ -303,7 +303,7 @@ window.Quarto = {
 </section>
 <section id="data-preprocessing" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="data-preprocessing"><span class="header-section-number">4.2</span> Data preprocessing</h2>
-<p>Some individuals have missing values for all nutrients, and we will remove these individuals from the data. We will also replace negative values with 0, since nutrition intake cannot be less than 0. Then apply a log transformation to the data.</p>
+<p>Some individuals have missing values for all nutrients, thus we will remove these individuals from the data. Also, there are some nutrition intake are less than zero, for which we will replace with 0. We then apply a log transformation to the data.</p>
 <p>We first count how many NA values and negative values are in each study.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>count_na_and_negatives <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
@@ -384,10 +384,63 @@ Number of negative values: 6707 </code></pre>
 </div>
 </div>
 <p>Now we don’t have any NA values or negative values in the data.</p>
-<p>For some models, we will need to standardize the data. We will standardize the data for each study separately.</p>
+<p>The assumptions for factor models require that each variable has a mean of 0. Therefore, for each study, we will center the data for each column. We note that for some model (Stack FA, Ind FA, BMSFA, and Tetris), this step is handeled internally, and for MOM-SS, the random intercepts are estimated, so we do not need to center the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>Y_list_scaled <span class="ot">&lt;-</span> <span class="fu">lapply</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  Y_list, <span class="cf">function</span>(x) <span class="fu">scale</span>(x, <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>Y_mat_scaled <span class="ot">&lt;-</span> Y_list_scaled <span class="sc">%&gt;%</span> <span class="fu">do.call</span>(rbind, .) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="model-fitting" class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="model-fitting"><span class="header-section-number">4.3</span> Model fitting</h2>
+<p>We recommend that we run the following code chunk in a high-performance computing environment, as the model fitting process can be computationally intensive. PFA and Tetris are particularly computationally expensive, where PFA requires more than 10 hours to run, and Tetris requires more than 4 days to run. Other models can be finished within half an hour. We recommend at least 5GB of memory for running the models and post-processing.</p>
+<p>For each model, we over-specify the numbers of factors to .. [to be written].</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stack FA</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>Y_mat <span class="ot">=</span>  Y_list <span class="sc">%&gt;%</span> <span class="fu">do.call</span>(rbind, .) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>()</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>fit_stackFA <span class="ot">&lt;-</span> MSFA<span class="sc">::</span><span class="fu">sp_fa</span>(Y_mat, <span class="at">k =</span> <span class="dv">6</span>, <span class="at">scaling =</span> <span class="cn">FALSE</span>, <span class="at">centering =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                              <span class="at">control =</span> <span class="fu">list</span>(<span class="at">nrun =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">800</span>))</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Ind FA</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>fit_indFA <span class="ot">&lt;-</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="cf">function</span>(s){</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>        j_s <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">8</span>, <span class="dv">8</span>, <span class="dv">8</span>, <span class="dv">8</span>, <span class="dv">8</span>)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>        MSFA<span class="sc">::</span><span class="fu">sp_fa</span>(Y_list[[s]], <span class="at">k =</span> j_s[s], <span class="at">scaling =</span> <span class="cn">FALSE</span>, <span class="at">centering =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>                    <span class="at">control =</span> <span class="fu">list</span>(<span class="at">nrun =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">8000</span>))</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>      })</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="co"># PFA</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>N_s <span class="ot">&lt;-</span> <span class="fu">sapply</span>(Y_list, nrow)</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>fit_PFA <span class="ot">&lt;-</span> <span class="fu">PFA</span>(<span class="at">Y=</span><span class="fu">t</span>(Y_mat_scaled),</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>                        <span class="at">latentdim =</span> <span class="dv">6</span>,</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>                        <span class="at">grpind =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>,</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">times =</span> N_s),</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>                <span class="at">Thin =</span> <span class="dv">5</span>,</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>                <span class="at">Total_itr =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">8000</span>)</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a><span class="co"># MOM-SS</span></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>Y_mat <span class="ot">=</span>  Y_list <span class="sc">%&gt;%</span> <span class="fu">do.call</span>(rbind, .) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>()</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Construct the membership matrix</span></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>N_s <span class="ot">&lt;-</span> <span class="fu">sapply</span>(Y_list, nrow)</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>M_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>   <span class="cf">for</span>(s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>){</span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>     M_list[[s]] <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span>, <span class="at">nrow =</span> N_s[s], <span class="at">ncol =</span> <span class="dv">1</span>)</span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>   }</span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>M <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">bdiag</span>(M_list))</span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>fit_MOMSS <span class="ot">&lt;-</span> BFR.BE<span class="sc">::</span><span class="fu">BFR.BE.EM.CV</span>(<span class="at">x =</span> Y_mat, <span class="at">v =</span> <span class="cn">NULL</span>, </span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">b =</span> M, <span class="at">q =</span> <span class="dv">6</span>, <span class="at">scaling =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a><span class="co"># SUFA</span></span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>fit_SUFA <span class="ot">&lt;-</span> SUFA<span class="sc">::</span><span class="fu">fit_SUFA</span>(Y_list_scaled, <span class="at">qmax=</span><span class="dv">6</span>, <span class="at">nrun =</span> <span class="dv">10000</span>)</span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a><span class="co"># BMSFA</span></span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a>fit_BMSFA <span class="ot">&lt;-</span> MSFA<span class="sc">::</span><span class="fu">sp_msfa</span>(Y_list, <span class="at">k =</span> <span class="dv">6</span>, <span class="at">j_s =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>),</span>
+<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a>                               <span class="at">outputlevel =</span> <span class="dv">1</span>, <span class="at">scaling =</span> <span class="cn">FALSE</span>, <span class="at">centering =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a>                               <span class="at">control =</span> <span class="fu">list</span>(<span class="at">nrun =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">8000</span>))</span>
+<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Tetris</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="post-processing" class="level2" data-number="4.4">
 <h2 data-number="4.4" class="anchored" data-anchor-id="post-processing"><span class="header-section-number">4.4</span> Post processing</h2>
