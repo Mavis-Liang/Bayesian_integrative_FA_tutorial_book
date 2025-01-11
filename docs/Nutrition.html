@@ -395,7 +395,7 @@ Number of negative values: 6707 </code></pre>
 </section>
 <section id="model-fitting" class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="model-fitting"><span class="header-section-number">4.3</span> Model fitting</h2>
-<p>We recommend that we run the following code chunk in a high-performance computing environment, as the model fitting process can be computationally intensive. PFA and Tetris are particularly computationally expensive, where PFA requires more than 10 hours to run, and Tetris requires more than 4 days to run. Other models can be finished within half an hour. We recommend at least 5GB of memory for running the models and post-processing.</p>
+<p>We recommend that we run the following code chunks in a high-performance computing environment, and store the post-processed output for downstream analysis, as the model fitting process can be computationally intensive. PFA and Tetris are particularly computationally expensive, where PFA requires more than 10 hours to run, and Tetris requires more than 4 days to run. Other models can be finished within half an hour. We recommend at least 5GB of memory for running the models and post-processing.</p>
 <p>For each model, we over-specify the numbers of factors to .. [to be written].</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stack FA</span></span>
@@ -478,7 +478,9 @@ Number of negative values: 6707 </code></pre>
 <span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">Phi =</span> est_Phi, <span class="at">SigmaPhi =</span> est_SigmaPhi, <span class="at">Psi =</span> est_PsiList, <span class="at">alpha =</span> est_alphas, <span class="at">B =</span> est_B,</span>
 <span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>              <span class="at">SigmaMarginal =</span> est_SigmaMarginal))</span>
-<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>res_MOMSS <span class="ot">&lt;-</span> <span class="fu">post_MOMSS</span>(fit_MOMSS)</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(res_MOMSS, <span class="st">"Data/Rnutrition_MOMSS.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>For SUFA, the shared and study-specific loading matrices, as well as the common and marginal covariance can be conveniently obtained via the <code>lam.est.all()</code>, <code>SUFA_shared_covmat()</code> and <code>sufa_marginal_covs()</code> functions. Error covariance is obtained by taking averages of the “residuals” fitted output. And the study-specific covariance matrices are calculated by subtracting the common covariance from the marginal covariance. Note that in the definition of SUFA, common covariance is <span class="math inline">\(\Phi\Phi^\top + \Sigma\)</span>.</p>
 <div class="cell">
@@ -508,7 +510,9 @@ Number of negative values: 6707 </code></pre>
 <span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>              <span class="at">Psi =</span> est_Psi,</span>
 <span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>              <span class="at">SigmaMarginal =</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>S, <span class="cf">function</span>(s) marginal_cov[,,s])</span>
 <span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>              ))</span>
-<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>res_SUFA <span class="ot">&lt;-</span> <span class="fu">post_SUFA</span>(fit_SUFA)</span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(res_SUFA, <span class="st">"Data/Rnutrition_SUFA.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>For Tetris, the common loading matrix <span class="math inline">\(\Phi\)</span> can be obtained through the <code>getLambda()</code> function. The common covariance matrix is calculated as <span class="math inline">\(\Phi\Phi^\top\)</span>. The study-specific loading matrices <span class="math inline">\(\Lambda_s\)</span> are obtained by multiplying the common loading matrix with the study-specific matrices <span class="math inline">\(T_s - P\)</span>. The study-specific covariance matrices are calculated as <span class="math inline">\(\Lambda_s\Lambda_s^\top\)</span>. The marginal covariance matrix is calculated as <span class="math inline">\(\Lambda T \Lambda^\top + \Psi\)</span>.</p>
 <div class="cell">
@@ -543,9 +547,11 @@ Number of negative values: 6707 </code></pre>
 <span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>              <span class="at">LambdaList =</span> est_LambdaList, <span class="at">SigmaLambdaList =</span> est_SigmaLambdaList,</span>
 <span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>              <span class="at">Psi =</span> Psi, <span class="at">T_s =</span> T_s,</span>
 <span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>              <span class="at">SigmaMarginal =</span> est_SigmaMarginal))</span>
-<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>res_Tetris <span class="ot">&lt;-</span> <span class="fu">post_Tetris</span>(run_fixed)</span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(res_Tetris, <span class="st">"Data/Rnutrition_Tetris.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>For PFA, the post-processing is a little bit tricky. According to the original paper, the common loading matrix <span class="math inline">\(\Phi\)</span> can be just the average of the estimated loadings from the posterior samples. However, we still apply OP as in BMSFA to get the common loadings, and the loadings in PFA should be the product of the estimated loadings and the square root of the variance of the factors. Therefore, we carry out multiplication for <span class="math inline">\(\Phi\)</span> for each posterior sample, and then OP the sequence. We also carry out multiplication for <span class="math inline">\(Q_s\)</span>, <span class="math inline">\(\Sigma_{\Phi}\)</span>, <span class="math inline">\(\Sigma_{\text{marginal}}\)</span>, <span class="math inline">\(\Sigma_{\Lambda_s}\)</span>, and <span class="math inline">\(\Psi\)</span> as in the definition of PFA, and then take the average of the results.</p>
+<p>For PFA, the post-processing is a little bit tricky. According to the original paper, the common loading matrix <span class="math inline">\(\Phi\)</span> can be just the average of the estimated loadings from the posterior samples. However, we still apply OP as in BMSFA to get the common loadings, and the loadings in PFA should be the product of the estimated loadings and the square root of the variance of the factors. Therefore, we carry out multiplication for <span class="math inline">\(\Phi\)</span> for each posterior sample, and then OP the sequence. We also carry out multiplication for <span class="math inline">\(Q_s\)</span>, <span class="math inline">\(\Sigma_{\Phi}\)</span>, <span class="math inline">\(\Sigma_{s}\)</span>, <span class="math inline">\(\Sigma_{\Lambda_s}\)</span>, and <span class="math inline">\(\Psi\)</span> as in the definition of PFA, and then take the average of the results.</p>
 <p>After that, the number of factors is determined by counting the number of columns in <span class="math inline">\(\Phi\)</span> that have all loadings less than <span class="math inline">\(10^{-3}\)</span>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>post_PFA <span class="ot">&lt;-</span> <span class="cf">function</span>(fit){</span>
@@ -595,7 +601,9 @@ Number of negative values: 6707 </code></pre>
 <span id="cb21-45"><a href="#cb21-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">Phi =</span> est_Phi, <span class="at">SigmaPhi =</span> est_SigmaPhi, <span class="at">Psi =</span> est_Psi, <span class="at">Q =</span> est_Q_list,</span>
 <span id="cb21-46"><a href="#cb21-46" aria-hidden="true" tabindex="-1"></a>              <span class="at">SigmaLambdaList =</span> est_SigmaLambdaList,</span>
 <span id="cb21-47"><a href="#cb21-47" aria-hidden="true" tabindex="-1"></a>              <span class="at">SigmaMarginal =</span> est_SigmaMarginal))</span>
-<span id="cb21-48"><a href="#cb21-48" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb21-48"><a href="#cb21-48" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb21-49"><a href="#cb21-49" aria-hidden="true" tabindex="-1"></a>res_PFA <span class="ot">&lt;-</span> <span class="fu">post_PFA</span>(fit_PFA)</span>
+<span id="cb21-50"><a href="#cb21-50" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(res_PFA, <span class="st">"Data/Rnutrition_PFA.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># columns have all loadings less than 10^-3</span></span>
@@ -606,13 +614,164 @@ Number of negative values: 6707 </code></pre>
 <span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    ))</span>
 <span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>Phi_PFA <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"Data/Rnutrition_PFA.rds"</span>)<span class="sc">$</span>Phi <span class="co"># Load post_PFA(fit_PFA) output</span></span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>K_PFA <span class="ot">&lt;-</span> <span class="fu">fun_neibour</span>(Phi_PFA)</span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>K_PFA</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="co"># The post_PFA(fit_PFA) object</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>res_PFA <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"Data/Rnutrition_PFA.rds"</span>)</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>Phi_PFA <span class="ot">&lt;-</span> res_PFA<span class="sc">$</span>Phi</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>K_PFA <span class="ot">&lt;-</span> <span class="fu">fun_neibour</span>(Phi_PFA)</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>K_PFA</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 6</code></pre>
 </div>
 </div>
+<p>The estimated <span class="math inline">\(K\)</span> for PFA is 6.</p>
+<p>Next, we show how to process the output of Stack FA, Ind FA, and BMSFA. While point estimates for the loadings and covariances can be obtained in the similar way as in PFA, the number of factors is determined with eigen value decompositions of the covariance matrix. Once the numbers of factors are determined, we have to run the models again with the correct number of factors, and then extract the final results.</p>
+<p>Therefore, for Stack FA, we first extract the point estimates of the <span class="math inline">\(\Phi\)</span> by applying OP to the posterior samples of the loadings. The common covariance matrix is calculated as <span class="math inline">\(\Phi\Phi^\top\)</span>. The marginal covariance matrix is calculated as the average of its posterior samples.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>post_stackFA <span class="ot">&lt;-</span> <span class="cf">function</span>(fit, S){</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  est_Phi <span class="ot">&lt;-</span> MSFA<span class="sc">::</span><span class="fu">sp_OP</span>(fit<span class="sc">$</span>Lambda, <span class="at">trace=</span><span class="cn">FALSE</span>)<span class="sc">$</span>Phi</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  est_SigmaPhi <span class="ot">&lt;-</span> <span class="fu">tcrossprod</span>(est_Phi)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  est_SigmaMarginal <span class="ot">&lt;-</span>  <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>S, <span class="cf">function</span>(s)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">apply</span>(fit<span class="sc">$</span>Sigma, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), mean)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  Psi_chain <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(fit<span class="sc">$</span>Sigma)[<span class="dv">3</span>]){</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    Psi_chain[[i]] <span class="ot">&lt;-</span> fit<span class="sc">$</span>Sigma[, , i] <span class="sc">-</span> <span class="fu">tcrossprod</span>(fit<span class="sc">$</span>Lambda[, , i])</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  est_Psi <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="st">'+'</span>, Psi_chain)<span class="sc">/</span><span class="fu">length</span>(Psi_chain)</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">Phi =</span> est_Phi, <span class="at">SigmaPhi =</span> est_SigmaPhi, <span class="at">Psi =</span> est_Psi,</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>              <span class="at">SigmaMarginal =</span> est_SigmaMarginal))</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>res_stackFA <span class="ot">&lt;-</span> <span class="fu">post_stackFA</span>(fit_stackFA, <span class="at">S=</span><span class="dv">6</span>)</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(res_stackFA, <span class="st">"Data/Rnutrition_StackFA.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>After that, we determine the number of factors by eigen value decomposition of the common covariance matrix. We then run the model again with the correct number of factors, and extract the final results.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>fun_eigen <span class="ot">&lt;-</span> <span class="cf">function</span>(Sig_mean) {</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  val_eigen <span class="ot">&lt;-</span> <span class="fu">eigen</span>(Sig_mean)<span class="sc">$</span>values</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  prop_var <span class="ot">&lt;-</span> val_eigen<span class="sc">/</span><span class="fu">sum</span>(val_eigen)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  choose_K <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">which</span>(prop_var <span class="sc">&gt;</span> <span class="fl">0.05</span>))</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(choose_K)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>res_stackFA <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"Data/Rnutrition_StackFA.rds"</span>)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>SigmaPhi_StackFA <span class="ot">&lt;-</span> res_stackFA<span class="sc">$</span>SigmaPhi </span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>K_StackFA <span class="ot">&lt;-</span> <span class="fu">fun_eigen</span>(SigmaPhi_StackFA)</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>K_StackFA</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4</code></pre>
+</div>
+</div>
+<p>The estimated <span class="math inline">\(K\)</span> for Stack FA is 4.</p>
+<p>Then we re-run the model with the correct number of factors, and extract the final results.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>fit_stackFA_2 <span class="ot">&lt;-</span> MSFA<span class="sc">::</span><span class="fu">sp_fa</span>(Y_mat_scaled, <span class="at">k =</span> K_StackFA, <span class="at">scaling =</span> <span class="cn">FALSE</span>, <span class="at">centering =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">control =</span> <span class="fu">list</span>(<span class="at">nrun =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">8000</span>))</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>res_stackFA_2 <span class="ot">&lt;-</span> <span class="fu">post_stackFA</span>(fit_stackFA_2, <span class="at">S=</span><span class="dv">6</span>)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(res_stackFA_2, <span class="st">"Data/Rnutrition_StackFA_2.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We repeat this process for Ind FA and BMSFA.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ind FA</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>post_indFA <span class="ot">&lt;-</span> <span class="cf">function</span>(fit){</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Estimated study-specific covariance and loading</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  S <span class="ot">&lt;-</span> <span class="fu">length</span>(fit_list)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  est_LambdaList <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>S, <span class="cf">function</span>(s){</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    MSFA<span class="sc">::</span><span class="fu">sp_OP</span>(fit_list[[s]]<span class="sc">$</span>Lambda, <span class="at">trace=</span><span class="cn">FALSE</span>)<span class="sc">$</span>Phi</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  est_SigmaLambdaList <span class="ot">&lt;-</span> <span class="fu">lapply</span>(est_LambdaList, <span class="cf">function</span>(x) <span class="fu">tcrossprod</span>(x))</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Marginal covariance matrices</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  est_SigmaMarginal <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>S, <span class="cf">function</span>(s) {</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>    fit <span class="ot">&lt;-</span> fit_list[[s]]</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">apply</span>(fit<span class="sc">$</span>Sigma, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), mean)</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>  Psi <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>S){</span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>    Psi_chain <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(fit_list[[<span class="dv">1</span>]]<span class="sc">$</span>Sigma)[<span class="dv">3</span>]){</span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>      Psi_chain[[i]] <span class="ot">&lt;-</span> fit_list[[s]]<span class="sc">$</span>Sigma[, , i] <span class="sc">-</span> <span class="fu">tcrossprod</span>(fit_list[[s]]<span class="sc">$</span>Lambda[, , i])</span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>    Psi[[s]] <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="st">'+'</span>, Psi_chain)<span class="sc">/</span><span class="fu">length</span>(Psi_chain)</span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">LambdaList =</span> est_LambdaList, <span class="at">SigmaLambdaList =</span> est_SigmaLambdaList, <span class="at">Psi =</span> Psi,</span>
+<span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a>              <span class="at">SigmaMarginal =</span> est_SigmaMarginal))</span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a>res_indFA <span class="ot">&lt;-</span> <span class="fu">post_indFA</span>(fit_indFA)</span>
+<span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(res_indFA, <span class="st">"Data/Rnutrition_IndFA.rds"</span>)</span>
+<span id="cb28-31"><a href="#cb28-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-32"><a href="#cb28-32" aria-hidden="true" tabindex="-1"></a><span class="co"># BMSFA</span></span>
+<span id="cb28-33"><a href="#cb28-33" aria-hidden="true" tabindex="-1"></a>post_BMSFA <span class="ot">&lt;-</span> <span class="cf">function</span>(fit){</span>
+<span id="cb28-34"><a href="#cb28-34" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Common covariance matrix and loading</span></span>
+<span id="cb28-35"><a href="#cb28-35" aria-hidden="true" tabindex="-1"></a>  est_Phi <span class="ot">&lt;-</span> <span class="fu">sp_OP</span>(fit<span class="sc">$</span>Phi, <span class="at">trace=</span><span class="cn">FALSE</span>)<span class="sc">$</span>Phi</span>
+<span id="cb28-36"><a href="#cb28-36" aria-hidden="true" tabindex="-1"></a>  est_SigmaPhi <span class="ot">&lt;-</span> <span class="fu">tcrossprod</span>(est_Phi)</span>
+<span id="cb28-37"><a href="#cb28-37" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-38"><a href="#cb28-38" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Study-specific covariance matrices and loadings</span></span>
+<span id="cb28-39"><a href="#cb28-39" aria-hidden="true" tabindex="-1"></a>  est_LambdaList <span class="ot">&lt;-</span> <span class="fu">lapply</span>(fit<span class="sc">$</span>Lambda, <span class="cf">function</span>(x) <span class="fu">sp_OP</span>(x, <span class="at">trace=</span><span class="cn">FALSE</span>)<span class="sc">$</span>Phi)</span>
+<span id="cb28-40"><a href="#cb28-40" aria-hidden="true" tabindex="-1"></a>  est_SigmaLambdaList <span class="ot">&lt;-</span> <span class="fu">lapply</span>(est_LambdaList, <span class="cf">function</span>(x) <span class="fu">tcrossprod</span>(x))</span>
+<span id="cb28-41"><a href="#cb28-41" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-42"><a href="#cb28-42" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Marginal covariance matrices</span></span>
+<span id="cb28-43"><a href="#cb28-43" aria-hidden="true" tabindex="-1"></a>  S <span class="ot">&lt;-</span> <span class="fu">length</span>(est_SigmaLambdaList)</span>
+<span id="cb28-44"><a href="#cb28-44" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Get point estimate of each Psi_s</span></span>
+<span id="cb28-45"><a href="#cb28-45" aria-hidden="true" tabindex="-1"></a>  est_PsiList <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>S, <span class="cf">function</span>(s) {</span>
+<span id="cb28-46"><a href="#cb28-46" aria-hidden="true" tabindex="-1"></a>    <span class="fu">apply</span>(fit<span class="sc">$</span>psi[[s]], <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), mean)</span>
+<span id="cb28-47"><a href="#cb28-47" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb28-48"><a href="#cb28-48" aria-hidden="true" tabindex="-1"></a>  est_margin_cov <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>S, <span class="cf">function</span>(s) {</span>
+<span id="cb28-49"><a href="#cb28-49" aria-hidden="true" tabindex="-1"></a>    est_SigmaPhi <span class="sc">+</span> est_SigmaLambdaList[[s]] <span class="sc">+</span> <span class="fu">diag</span>(est_PsiList[[s]] <span class="sc">%&gt;%</span> <span class="fu">as.vector</span>())</span>
+<span id="cb28-50"><a href="#cb28-50" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb28-51"><a href="#cb28-51" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-52"><a href="#cb28-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">Phi =</span> est_Phi, <span class="at">SigmaPhi =</span> est_SigmaPhi,</span>
+<span id="cb28-53"><a href="#cb28-53" aria-hidden="true" tabindex="-1"></a>         <span class="at">LambdaList =</span> est_LambdaList, <span class="at">SigmaLambdaList =</span> est_SigmaLambdaList,</span>
+<span id="cb28-54"><a href="#cb28-54" aria-hidden="true" tabindex="-1"></a>         <span class="at">PsiList =</span> est_PsiList,</span>
+<span id="cb28-55"><a href="#cb28-55" aria-hidden="true" tabindex="-1"></a>         <span class="at">SigmaMarginal =</span> est_margin_cov))</span>
+<span id="cb28-56"><a href="#cb28-56" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb28-57"><a href="#cb28-57" aria-hidden="true" tabindex="-1"></a>res_BMSFA <span class="ot">&lt;-</span> <span class="fu">post_BMSFA</span>(fit_BMSFA)</span>
+<span id="cb28-58"><a href="#cb28-58" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(res_BMSFA, <span class="st">"Data/Rnutrition_BMSFA.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>SigmaLambda_IndFA <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"Data/Rnutrition_IndFA.rds"</span>)<span class="sc">$</span>SigmaLambda</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>Js_IndFA <span class="ot">&lt;-</span> <span class="fu">lapply</span>(SigmaLambda_IndFA, fun_eigen)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>Js_IndFA <span class="sc">%&gt;%</span> <span class="fu">unlist</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4 5 5 5 4 4</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>SigmaPhi_BMSFA <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"Data/Rnutrition_BMSFA.rds"</span>)<span class="sc">$</span>SigmaPhi</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>K_BMSFA <span class="ot">&lt;-</span> <span class="fu">fun_eigen</span>(SigmaPhi_BMSFA)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>SigmaLambda_BMSFA <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"Data/Rnutrition_BMSFA.rds"</span>)<span class="sc">$</span>SigmaLambda</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>Js_BMSFA <span class="ot">&lt;-</span> <span class="fu">lapply</span>(SigmaLambda_BMSFA, fun_eigen)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>K_BMSFA <span class="sc">%&gt;%</span> <span class="fu">unlist</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>Js_BMSFA <span class="sc">%&gt;%</span> <span class="fu">unlist</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2 2 2 2 2 2</code></pre>
+</div>
+</div>
+<p>The estimated <span class="math inline">\(J_s\)</span> for Ind FA are 4, 5, 5, 5, 4, and 4. The estimated <span class="math inline">\(K\)</span> for BMSFA is 4 and the estimated <span class="math inline">\(J_s\)</span> are 2, 2, 2, 2, 2, and 2</p>
+<p>Then we re-run the models with the correct number of factors, and extract the final results.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ind FA</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>fit_indFA_2 <span class="ot">&lt;-</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="cf">function</span>(s){</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    j_s <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">4</span>)</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    MSFA<span class="sc">::</span><span class="fu">sp_fa</span>(Y_list[[s]], <span class="at">k =</span> j_s[s], <span class="at">scaling =</span> <span class="cn">FALSE</span>, <span class="at">centering =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">control =</span> <span class="fu">list</span>(<span class="at">nrun =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">8000</span>))</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>res_indFA_2 <span class="ot">&lt;-</span> <span class="fu">post_indFA</span>(fit_indFA_2)</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(res_indFA_2, <span class="st">"Data/Rnutrition_IndFA_2.rds"</span>)</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a><span class="co"># BMSFA</span></span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>fit_BMSFA_2 <span class="ot">&lt;-</span> MSFA<span class="sc">::</span><span class="fu">sp_msfa</span>(Y_list, <span class="at">k =</span> <span class="dv">4</span>, <span class="at">j_s =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>),</span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>                           <span class="at">outputlevel =</span> <span class="dv">1</span>, <span class="at">scaling =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>                           <span class="at">centering =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>                           <span class="at">control =</span> <span class="fu">list</span>(<span class="at">nrun =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">8000</span>))</span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>res_BMSFA_2 <span class="ot">&lt;-</span> <span class="fu">post_BMSFA</span>(fit_BMSFA_2)</span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(res_BMSFA_2, <span class="st">"Data/Rnutrition_BMSFA_2.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now the final results are obtained and you can obtain the saved files mentioned above from the <a href="https://github.com/Mavis-Liang/Bayesian_integrative_FA_benchmark/tree/main/RDS">GitHub repository</a>.</p>
 </section>
 <section id="visualization" class="level2" data-number="4.5">
 <h2 data-number="4.5" class="anchored" data-anchor-id="visualization"><span class="header-section-number">4.5</span> Visualization</h2>
