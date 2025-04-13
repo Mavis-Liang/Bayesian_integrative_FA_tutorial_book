@@ -34,7 +34,7 @@
     "href": "Installation.html",
     "title": "1  Package Installation",
     "section": "",
-    "text": "1.1 Stack FA, Ind FA, and BMSFA\nThe Stack FA, Ind FA, and BMSFA models are implemented in the MSFA package, which is not available on CRAN. We can install it from GitHub using the remotes package. We use sp_fa() within the MSFA package to fit the Stack FA and Ind FA model, and sp_msfa() to fit the BMSFA model.\ninstall.packages(\"remotes\")\nremotes::install_github(\"rdevito/MSFA\")\nlibrary(MSFA)",
+    "text": "1.1 Stack FA, Ind FA, and BMSFA\nThe Stack FA, Ind FA, and BMSFA models are implemented in the MSFA package, which is not available on CRAN. We can install it from GitHub using the remotes package. We use sp_fa() within the MSFA package to fit the Stack FA and Ind FA model, and sp_msfa() to fit the BMSFA model.\ninstall.packages(\"remotes\")\nremotes::install_github(\"rdevito/MSFA\")\nlibrary(MSFA)\nI edited the functions a bit so that sp_fa() and sp_msfa() can accept the scaling and centering arguments. So that we can only center the data without scaling it, or centering and scaling, or neither.\ndevtools::install_github(\"Mavis-Liang/MSFA\")",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Package Installation</span>"
     ]
@@ -154,7 +154,37 @@
     "href": "Gene.html",
     "title": "3  Case study: gene expression data",
     "section": "",
-    "text": "library(curatedOvarianData)\nlibrary(tidyverse)\n\n\n#data(package=\"curatedOvarianData\")\ndata(GSE13876_eset)\ndata(GSE26712_eset)\ndata(GSE9891_eset)\ndata(PMID17290060_eset)",
+    "text": "3.1 Loading and previewing the data\nWe load the curatedOvarianData package to get the data. Description of each study can be found with data(package=\"curatedOvarianData\").\nlibrary(curatedOvarianData)\n#data(package=\"curatedOvarianData\")\ndata(GSE13876_eset)\ndata(GSE26712_eset)\ndata(GSE9891_eset)\ndata(PMID17290060_eset)\nThe four datasets are of similar sizes. All of them have the majority of patients in the late stage of the cancer, and histological subtypes observed in the tissue samples are mostly serous carcinoma. The datasets differs in respect sequencing platforms, which are Operonv3two-color, AffymetrixHG-U133A, AffymetrixHG-U133Plus2 and AffymetrixHG-U133A.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Case study: gene expression data</span>"
+    ]
+  },
+  {
+    "objectID": "Gene.html#data-pre-processing",
+    "href": "Gene.html#data-pre-processing",
+    "title": "3  Case study: gene expression data",
+    "section": "3.2 Data pre-processing",
+    "text": "3.2 Data pre-processing\nFirst we find intersection of genes that are exist in all four studies. We use featureNames to extract the gene names and exprs to extract the data matrices. More operations of the ExpressionSets can be found in (Falcon, Morgan, and Gentleman 2007).\n\ninter_genes &lt;- Reduce(intersect, list(featureNames(GSE13876_eset),\n                                      featureNames(GSE26712_eset), \n                                      featureNames(GSE9891_eset),\n                                      featureNames(PMID17290060_eset)))\n\nGSE13876_eset &lt;- GSE13876_eset[inter_genes,]\nGSE26712_eset &lt;- GSE26712_eset[inter_genes,]\nGSE9891_eset &lt;- GSE9891_eset[inter_genes,]\nPMID17290060_eset &lt;- PMID17290060_eset[inter_genes,]\n\nstudy1 &lt;- t(exprs(GSE13876_eset))\nstudy2 &lt;- t(exprs(GSE26712_eset))\nstudy3 &lt;- t(exprs(GSE9891_eset))\nstudy4 &lt;- t(exprs(PMID17290060_eset))\n\nWe then filter the genes so that only high variance genes are kept for later analysis.\n\n# calculate Coefficient of Variation of each gene\ncv1 &lt;- apply(study1, 2, sd) / apply(study1, 2, mean)\ncv2 &lt;- apply(study2, 2, sd) / apply(study2, 2, mean)\ncv3 &lt;- apply(study3, 2, sd) / apply(study3, 2, mean)\ncv4 &lt;- apply(study4, 2, sd) / apply(study4, 2, mean)\ncv_matrix &lt;- rbind(cv1, cv2, cv3, cv4)\n\n# Find genes with CV &gt;= threshold in at least one study\nthreshold &lt;- 0.16\ngenes_to_keep &lt;- apply(cv_matrix, 2, function(cv) any(cv &gt;= threshold))\nsum(genes_to_keep)\n\n[1] 1060\n\n# Filtered\nstudy1 &lt;- GSE13876_eset[genes_to_keep,]\nstudy2 &lt;- GSE26712_eset[genes_to_keep,]\nstudy3 &lt;- GSE9891_eset[genes_to_keep,]\nstudy4 &lt;- PMID17290060_eset[genes_to_keep,]\n\nNext, we log-transform the data (for a better normality) and store them in 4 \\(N_s\\times P\\) matrices.\n\ndf1 &lt;- study1 %&gt;% exprs() %&gt;% t() %&gt;% \n  log() %&gt;% as.data.frame()\ndf2 &lt;- study2 %&gt;% exprs() %&gt;% t() %&gt;% \n  log() %&gt;% as.data.frame()\ndf3 &lt;- study3 %&gt;% exprs() %&gt;% t() %&gt;% \n  log()  %&gt;% as.data.frame()\ndf4 &lt;- study4 %&gt;% exprs() %&gt;% t() %&gt;% \n  log()  %&gt;% as.data.frame()\nlist_gene &lt;- list(df1, df2, df3, df4)\nsaveRDS(list(df1, df2, df3, df4), \"./Data/CuratedOvarian_processed.rds\")\n\nNow we can see the dimensions of each study:\n\nsapply(list_gene, dim)\n\n     [,1] [,2] [,3] [,4]\n[1,]  157  195  285  117\n[2,] 1060 1060 1060 1060\n\n\nThe ultimate data for analysis has \\(N_s=(157, 195, 285, 117)\\) for \\(s=1,2, 3, 4\\), and \\(P=1060\\).\nWe scale the data so that we focus on the correlations between the genes. When the data are scaled, the variance of the genes are 1 and the off-diagonal values scales up, so does the estimated covariances matrices, which facilitates a more interpretable network analysis.\n\nY_list &lt;- readRDS(\"./Data/CuratedOvarian_processed.rds\")\nY_list_scaled &lt;- lapply(\n Y_list, function(x) scale(x, center = TRUE, scale = TRUE)\n)\nY_mat_scaled &lt;- Y_list_scaled %&gt;% do.call(rbind, .) %&gt;% as.matrix()",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Case study: gene expression data</span>"
+    ]
+  },
+  {
+    "objectID": "Gene.html#fitting-the-models",
+    "href": "Gene.html#fitting-the-models",
+    "title": "3  Case study: gene expression data",
+    "section": "3.3 Fitting the models",
+    "text": "3.3 Fitting the models\nFor models fitted with MSFA::sp_fa, the function provides scaling and centering arguments. Therefore, we do not need to use the scaled data before fitting (here I use Mavis’s version of MSFA).\n\nY_mat =  Y_list %&gt;% do.call(rbind, .) %&gt;% as.matrix()\nfit_stackFA &lt;- MSFA::sp_fa(Y_mat, k = 6, scaling = FALSE, centering = TRUE, \n                                control = list(nrun = 10000, burn = 8000))\n\nfit_indFA &lt;-\n      lapply(1:6, function(s){\n        j_s = c(8, 8, 8, 8, 8, 8)\n        MSFA::sp_fa(Y_list[[s]], k = j_s[s], scaling = FALSE, centering = TRUE,\n                    control = list(nrun = 10000, burn = 8000))\n      })\n\nMOM-SS:\n\n# Construct the membership matrix\nN_s &lt;- sapply(Y_list, nrow)\nM_list &lt;- list()\n   for(s in 1:4){\n     M_list[[s]] &lt;- matrix(1, nrow = N_s[s], ncol = 1)\n   }\nM &lt;- as.matrix(bdiag(M_list))\n\nfit_MOMSS &lt;- BFR.BE::BFR.BE.EM.CV(x = Y_mat, v = NULL, b = M, q = 20, scaling = TRUE)\n\nPFA (we don’t recommend running it. It takes 4 days and more.)\n\nN_s &lt;- sapply(Y_list, nrow)\nfit_PFA &lt;- PFA(Y=t(Y_mat_scaled), \n                        latentdim = 20,\n                       grpind = rep(1:4, \n                                     times = N_s),\n              Thin = 5,\n              Total_itr = 10000, burn = 8000)\n\nSUFA (takes about 10 hours):\n\nfit_SUFA &lt;- SUFA::fit_SUFA(Y_list_scaled, qmax=20,nrun = 10000)\n\nBMSFA:\n\nfit_BMSFA &lt;- MSFA::sp_msfa(Y_list, k = 20, j_s = c(4, 4, 4, 4),\n                              outputlevel = 1, scaling = TRUE, centering = TRUE, \n                               control = list(nrun = 10000, burn = 8000))\n\nTetris (we don’t recommend running it. It could take more than 10 days.):\n\nset_alpha &lt;- ceiling(1.25*4)\nfit_Tetris &lt;- tetris(Y_list_scaled, alpha=set_alpha, beta=1, nprint = 200, nrun=10000, burn=8000)\nprint(\"Start to choose big_T. It might take a long time.\")\nbig_T &lt;- choose.A(fit_Tetris, alpha_IBP=set_alpha, S=4)\nrun_fixed &lt;- tetris(Y_list_scaled, alpha=set_alpha, beta=1, \n                     fixed=TRUE, A_fixed=big_T, nprint = 200, nrun=10000, burn=8000)",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Case study: gene expression data</span>"
+    ]
+  },
+  {
+    "objectID": "Gene.html#post-processing",
+    "href": "Gene.html#post-processing",
+    "title": "3  Case study: gene expression data",
+    "section": "3.4 Post-processing",
+    "text": "3.4 Post-processing\nWe use the post_xxx() functions defined in the chapter of nutrition applications to post-process for point estimates of the factor loadings, common factors, and covariance matrices.\nFor Stack FA, Ind FA and BMSFA, we need to determine the number of common factors \\(K\\) and the number of latent dimensions \\(j_s\\) for each study after the post-processing, and we need to re-run those models.\nHere we start with Stack FA, Ind FA and BMSFA:\n\n# Stack FA\n\n\n\n\n\nFalcon, Seth, Martin Morgan, and Robert Gentleman. 2007. “An Introduction to Bioconductor’s Expressionset Class.”\n\n\nGanzfried, Benjamin Frederick, Markus Riester, Benjamin Haibe-Kains, Thomas Risch, Svitlana Tyekucheva, Ina Jazic, Xin Victoria Wang, et al. 2013. “curatedOvarianData: Clinically Annotated Data for the Ovarian Cancer Transcriptome.” Database 2013.",
     "crumbs": [
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>Case study: gene expression data</span>"
     ]
@@ -164,7 +194,7 @@
     "href": "references.html",
     "title": "References",
     "section": "",
-    "text": "De Vito, Roberta, Briana Stephenson, Daniela Sotres-Alvarez, Anna-Maria\nSiega-Riz, Josiemer Mattei, Maria Parpinel, Brandilyn A Peters, et al.\n2022. “Shared and Ethnic Background Site-Specific Dietary Patterns\nin the Hispanic Community Health Study/Study of Latinos\n(HCHS/SOL).” medRxiv, 2022–06.\n\n\nGrabski, Isabella N, Roberta De Vito, Lorenzo Trippa, and Giovanni\nParmigiani. 2023. “Bayesian Combinatorial MultiStudy Factor\nAnalysis.” The Annals of Applied Statistics 17 (3):\n2212.",
+    "text": "De Vito, Roberta, Briana Stephenson, Daniela Sotres-Alvarez, Anna-Maria\nSiega-Riz, Josiemer Mattei, Maria Parpinel, Brandilyn A Peters, et al.\n2022. “Shared and Ethnic Background Site-Specific Dietary Patterns\nin the Hispanic Community Health Study/Study of Latinos\n(HCHS/SOL).” medRxiv, 2022–06.\n\n\nFalcon, Seth, Martin Morgan, and Robert Gentleman. 2007. “An\nIntroduction to Bioconductor’s Expressionset Class.”\n\n\nGanzfried, Benjamin Frederick, Markus Riester, Benjamin Haibe-Kains,\nThomas Risch, Svitlana Tyekucheva, Ina Jazic, Xin Victoria Wang, et al.\n2013. “curatedOvarianData: Clinically Annotated Data for the\nOvarian Cancer Transcriptome.” Database 2013.\n\n\nGrabski, Isabella N, Roberta De Vito, Lorenzo Trippa, and Giovanni\nParmigiani. 2023. “Bayesian Combinatorial MultiStudy Factor\nAnalysis.” The Annals of Applied Statistics 17 (3):\n2212.",
     "crumbs": [
       "References"
     ]

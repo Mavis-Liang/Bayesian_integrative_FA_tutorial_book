@@ -54,7 +54,27 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -103,6 +123,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -176,7 +225,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#loading-and-previewing-the-data" id="toc-loading-and-previewing-the-data" class="nav-link active" data-scroll-target="#loading-and-previewing-the-data"><span class="header-section-number">3.1</span> Loading and previewing the data</a></li>
+  <li><a href="#data-pre-processing" id="toc-data-pre-processing" class="nav-link" data-scroll-target="#data-pre-processing"><span class="header-section-number">3.2</span> Data pre-processing</a></li>
+  <li><a href="#fitting-the-models" id="toc-fitting-the-models" class="nav-link" data-scroll-target="#fitting-the-models"><span class="header-section-number">3.3</span> Fitting the models</a></li>
+  <li><a href="#post-processing" id="toc-post-processing" class="nav-link" data-scroll-target="#post-processing"><span class="header-section-number">3.4</span> Post-processing</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -200,19 +258,175 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<p>Similarly, we load utility package <code>tidyverse</code> to help with data manipulation and visualization.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(curatedOvarianData)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In this demonstration, we use the curate Ovarian data<span class="citation" data-cites="ganzfried2013curatedovariandata">(<a href="references.html#ref-ganzfried2013curatedovariandata" role="doc-biblioref">2013</a>)</span> to demonstrate (1) the common gene co-expression network drawn by <span class="math inline">\(\Sigma_\Phi\)</span> and (2) the fit of the models via calculating MSE. This data contains the gene expression and clinical outcomes of 2970 patients collected from 23 studies. Different studies have different sequencing platforms, sample sizes, stage/subtype of the tumor, survival and censoring information.</p>
+<section id="loading-and-previewing-the-data" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="loading-and-previewing-the-data"><span class="header-section-number">3.1</span> Loading and previewing the data</h2>
+<p>We load the <code>curatedOvarianData</code> package to get the data. Description of each study can be found with <code>data(package="curatedOvarianData")</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(curatedOvarianData)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#data(package="curatedOvarianData")</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(GSE13876_eset)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(GSE26712_eset)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(GSE9891_eset)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(PMID17290060_eset)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#data(package="curatedOvarianData")</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(GSE13876_eset)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(GSE26712_eset)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(GSE9891_eset)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(PMID17290060_eset)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The four datasets are of similar sizes. All of them have the majority of patients in the late stage of the cancer, and histological subtypes observed in the tissue samples are mostly serous carcinoma. The datasets differs in respect sequencing platforms, which are Operonv3two-color, AffymetrixHG-U133A, AffymetrixHG-U133Plus2 and AffymetrixHG-U133A.</p>
+</section>
+<section id="data-pre-processing" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="data-pre-processing"><span class="header-section-number">3.2</span> Data pre-processing</h2>
+<p>First we find intersection of genes that are exist in all four studies. We use <code>featureNames</code> to extract the gene names and <code>exprs</code> to extract the data matrices. More operations of the ExpressionSets can be found in <span class="citation" data-cites="falcon2007introduction">(<a href="references.html#ref-falcon2007introduction" role="doc-biblioref">Falcon, Morgan, and Gentleman 2007</a>)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>inter_genes <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(intersect, <span class="fu">list</span>(<span class="fu">featureNames</span>(GSE13876_eset),</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                                      <span class="fu">featureNames</span>(GSE26712_eset), </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                                      <span class="fu">featureNames</span>(GSE9891_eset),</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                                      <span class="fu">featureNames</span>(PMID17290060_eset)))</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>GSE13876_eset <span class="ot">&lt;-</span> GSE13876_eset[inter_genes,]</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>GSE26712_eset <span class="ot">&lt;-</span> GSE26712_eset[inter_genes,]</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>GSE9891_eset <span class="ot">&lt;-</span> GSE9891_eset[inter_genes,]</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>PMID17290060_eset <span class="ot">&lt;-</span> PMID17290060_eset[inter_genes,]</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>study1 <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">exprs</span>(GSE13876_eset))</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>study2 <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">exprs</span>(GSE26712_eset))</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>study3 <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">exprs</span>(GSE9891_eset))</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>study4 <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">exprs</span>(PMID17290060_eset))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We then filter the genes so that only high variance genes are kept for later analysis.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate Coefficient of Variation of each gene</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>cv1 <span class="ot">&lt;-</span> <span class="fu">apply</span>(study1, <span class="dv">2</span>, sd) <span class="sc">/</span> <span class="fu">apply</span>(study1, <span class="dv">2</span>, mean)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>cv2 <span class="ot">&lt;-</span> <span class="fu">apply</span>(study2, <span class="dv">2</span>, sd) <span class="sc">/</span> <span class="fu">apply</span>(study2, <span class="dv">2</span>, mean)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>cv3 <span class="ot">&lt;-</span> <span class="fu">apply</span>(study3, <span class="dv">2</span>, sd) <span class="sc">/</span> <span class="fu">apply</span>(study3, <span class="dv">2</span>, mean)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>cv4 <span class="ot">&lt;-</span> <span class="fu">apply</span>(study4, <span class="dv">2</span>, sd) <span class="sc">/</span> <span class="fu">apply</span>(study4, <span class="dv">2</span>, mean)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>cv_matrix <span class="ot">&lt;-</span> <span class="fu">rbind</span>(cv1, cv2, cv3, cv4)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Find genes with CV &gt;= threshold in at least one study</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>threshold <span class="ot">&lt;-</span> <span class="fl">0.16</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>genes_to_keep <span class="ot">&lt;-</span> <span class="fu">apply</span>(cv_matrix, <span class="dv">2</span>, <span class="cf">function</span>(cv) <span class="fu">any</span>(cv <span class="sc">&gt;=</span> threshold))</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(genes_to_keep)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1060</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtered</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>study1 <span class="ot">&lt;-</span> GSE13876_eset[genes_to_keep,]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>study2 <span class="ot">&lt;-</span> GSE26712_eset[genes_to_keep,]</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>study3 <span class="ot">&lt;-</span> GSE9891_eset[genes_to_keep,]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>study4 <span class="ot">&lt;-</span> PMID17290060_eset[genes_to_keep,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, we log-transform the data (for a better normality) and store them in 4 <span class="math inline">\(N_s\times P\)</span> matrices.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df1 <span class="ot">&lt;-</span> study1 <span class="sc">%&gt;%</span> <span class="fu">exprs</span>() <span class="sc">%&gt;%</span> <span class="fu">t</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log</span>() <span class="sc">%&gt;%</span> <span class="fu">as.data.frame</span>()</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>df2 <span class="ot">&lt;-</span> study2 <span class="sc">%&gt;%</span> <span class="fu">exprs</span>() <span class="sc">%&gt;%</span> <span class="fu">t</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log</span>() <span class="sc">%&gt;%</span> <span class="fu">as.data.frame</span>()</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>df3 <span class="ot">&lt;-</span> study3 <span class="sc">%&gt;%</span> <span class="fu">exprs</span>() <span class="sc">%&gt;%</span> <span class="fu">t</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log</span>()  <span class="sc">%&gt;%</span> <span class="fu">as.data.frame</span>()</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>df4 <span class="ot">&lt;-</span> study4 <span class="sc">%&gt;%</span> <span class="fu">exprs</span>() <span class="sc">%&gt;%</span> <span class="fu">t</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log</span>()  <span class="sc">%&gt;%</span> <span class="fu">as.data.frame</span>()</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>list_gene <span class="ot">&lt;-</span> <span class="fu">list</span>(df1, df2, df3, df4)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(<span class="fu">list</span>(df1, df2, df3, df4), <span class="st">"./Data/CuratedOvarian_processed.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can see the dimensions of each study:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(list_gene, dim)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3] [,4]
+[1,]  157  195  285  117
+[2,] 1060 1060 1060 1060</code></pre>
+</div>
+</div>
+<p>The ultimate data for analysis has <span class="math inline">\(N_s=(157, 195, 285, 117)\)</span> for <span class="math inline">\(s=1,2, 3, 4\)</span>, and <span class="math inline">\(P=1060\)</span>.</p>
+<p>We scale the data so that we focus on the correlations between the genes. When the data are scaled, the variance of the genes are 1 and the off-diagonal values scales up, so does the estimated covariances matrices, which facilitates a more interpretable network analysis.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>Y_list <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"./Data/CuratedOvarian_processed.rds"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>Y_list_scaled <span class="ot">&lt;-</span> <span class="fu">lapply</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a> Y_list, <span class="cf">function</span>(x) <span class="fu">scale</span>(x, <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>Y_mat_scaled <span class="ot">&lt;-</span> Y_list_scaled <span class="sc">%&gt;%</span> <span class="fu">do.call</span>(rbind, .) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="fitting-the-models" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="fitting-the-models"><span class="header-section-number">3.3</span> Fitting the models</h2>
+<p>For models fitted with <code>MSFA::sp_fa</code>, the function provides <code>scaling</code> and <code>centering</code> arguments. Therefore, we do not need to use the scaled data before fitting (here I use Mavis’s version of MSFA).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>Y_mat <span class="ot">=</span>  Y_list <span class="sc">%&gt;%</span> <span class="fu">do.call</span>(rbind, .) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>()</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>fit_stackFA <span class="ot">&lt;-</span> MSFA<span class="sc">::</span><span class="fu">sp_fa</span>(Y_mat, <span class="at">k =</span> <span class="dv">6</span>, <span class="at">scaling =</span> <span class="cn">FALSE</span>, <span class="at">centering =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>                                <span class="at">control =</span> <span class="fu">list</span>(<span class="at">nrun =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">8000</span>))</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>fit_indFA <span class="ot">&lt;-</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="cf">function</span>(s){</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        j_s <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">8</span>, <span class="dv">8</span>, <span class="dv">8</span>, <span class="dv">8</span>, <span class="dv">8</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>        MSFA<span class="sc">::</span><span class="fu">sp_fa</span>(Y_list[[s]], <span class="at">k =</span> j_s[s], <span class="at">scaling =</span> <span class="cn">FALSE</span>, <span class="at">centering =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>                    <span class="at">control =</span> <span class="fu">list</span>(<span class="at">nrun =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">8000</span>))</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>      })</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>MOM-SS:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Construct the membership matrix</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>N_s <span class="ot">&lt;-</span> <span class="fu">sapply</span>(Y_list, nrow)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>M_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>   <span class="cf">for</span>(s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>){</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>     M_list[[s]] <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span>, <span class="at">nrow =</span> N_s[s], <span class="at">ncol =</span> <span class="dv">1</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>   }</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>M <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">bdiag</span>(M_list))</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>fit_MOMSS <span class="ot">&lt;-</span> BFR.BE<span class="sc">::</span><span class="fu">BFR.BE.EM.CV</span>(<span class="at">x =</span> Y_mat, <span class="at">v =</span> <span class="cn">NULL</span>, <span class="at">b =</span> M, <span class="at">q =</span> <span class="dv">20</span>, <span class="at">scaling =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>PFA (we don’t recommend running it. It takes 4 days and more.)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>N_s <span class="ot">&lt;-</span> <span class="fu">sapply</span>(Y_list, nrow)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>fit_PFA <span class="ot">&lt;-</span> <span class="fu">PFA</span>(<span class="at">Y=</span><span class="fu">t</span>(Y_mat_scaled), </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">latentdim =</span> <span class="dv">20</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">grpind =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">times =</span> N_s),</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">Thin =</span> <span class="dv">5</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">Total_itr =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">8000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>SUFA (takes about 10 hours):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>fit_SUFA <span class="ot">&lt;-</span> SUFA<span class="sc">::</span><span class="fu">fit_SUFA</span>(Y_list_scaled, <span class="at">qmax=</span><span class="dv">20</span>,<span class="at">nrun =</span> <span class="dv">10000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>BMSFA:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>fit_BMSFA <span class="ot">&lt;-</span> MSFA<span class="sc">::</span><span class="fu">sp_msfa</span>(Y_list, <span class="at">k =</span> <span class="dv">20</span>, <span class="at">j_s =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">4</span>),</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                              <span class="at">outputlevel =</span> <span class="dv">1</span>, <span class="at">scaling =</span> <span class="cn">TRUE</span>, <span class="at">centering =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                               <span class="at">control =</span> <span class="fu">list</span>(<span class="at">nrun =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">8000</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Tetris (we don’t recommend running it. It could take more than 10 days.):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>set_alpha <span class="ot">&lt;-</span> <span class="fu">ceiling</span>(<span class="fl">1.25</span><span class="sc">*</span><span class="dv">4</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>fit_Tetris <span class="ot">&lt;-</span> <span class="fu">tetris</span>(Y_list_scaled, <span class="at">alpha=</span>set_alpha, <span class="at">beta=</span><span class="dv">1</span>, <span class="at">nprint =</span> <span class="dv">200</span>, <span class="at">nrun=</span><span class="dv">10000</span>, <span class="at">burn=</span><span class="dv">8000</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">"Start to choose big_T. It might take a long time."</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>big_T <span class="ot">&lt;-</span> <span class="fu">choose.A</span>(fit_Tetris, <span class="at">alpha_IBP=</span>set_alpha, <span class="at">S=</span><span class="dv">4</span>)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>run_fixed <span class="ot">&lt;-</span> <span class="fu">tetris</span>(Y_list_scaled, <span class="at">alpha=</span>set_alpha, <span class="at">beta=</span><span class="dv">1</span>, </span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">fixed=</span><span class="cn">TRUE</span>, <span class="at">A_fixed=</span>big_T, <span class="at">nprint =</span> <span class="dv">200</span>, <span class="at">nrun=</span><span class="dv">10000</span>, <span class="at">burn=</span><span class="dv">8000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="post-processing" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="post-processing"><span class="header-section-number">3.4</span> Post-processing</h2>
+<p>We use the <code>post_xxx()</code> functions defined in the chapter of nutrition applications to post-process for point estimates of the factor loadings, common factors, and covariance matrices.</p>
+<p>For Stack FA, Ind FA and BMSFA, we need to determine the number of common factors <span class="math inline">\(K\)</span> and the number of latent dimensions <span class="math inline">\(j_s\)</span> for each study after the post-processing, and we need to re-run those models.</p>
+<p>Here we start with Stack FA, Ind FA and BMSFA:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stack FA</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-falcon2007introduction" class="csl-entry" role="listitem">
+Falcon, Seth, Martin Morgan, and Robert Gentleman. 2007. <span>“An Introduction to Bioconductor’s Expressionset Class.”</span>
+</div>
+<div id="ref-ganzfried2013curatedovariandata" class="csl-entry" role="listitem">
+Ganzfried, Benjamin Frederick, Markus Riester, Benjamin Haibe-Kains, Thomas Risch, Svitlana Tyekucheva, Ina Jazic, Xin Victoria Wang, et al. 2013. <span>“curatedOvarianData: Clinically Annotated Data for the Ovarian Cancer Transcriptome.”</span> <em>Database</em> 2013.
+</div>
+</div>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
