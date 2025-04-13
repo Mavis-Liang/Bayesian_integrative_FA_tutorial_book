@@ -54,7 +54,27 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -242,7 +262,8 @@ window.Quarto = {
 
 <section id="loading-and-previewing-the-data" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="loading-and-previewing-the-data"><span class="header-section-number">2.1</span> Loading and previewing the data</h2>
-<p>The data used in this section is from… This data is not publicly available. Please contact the authors of the original study for access.</p>
+<p>The data used in this section is from a large multi-site study investigating health and diet among Hispanic/Latino adults in the United States<span class="citation" data-cites="de2022shared">(<a href="references.html#ref-de2022shared" role="doc-biblioref">2022</a>)</span>. This data is not publicly available. Please contact the authors of the original study for access.</p>
+<p>However, you can use this simulated data instead: <a href="https://github.com/Mavis-Liang/Bayesian_integrative_FA/raw/refs/heads/main/RDS/simulated_nutrition_data.rds">simulated_nutrition_data.rds</a>. To read in the data, use <code>readRDS()</code>. The loaded object contains data in both <code>Y_mat</code> and <code>Y_list</code> formats, as well as covariates and other information. It is generated with the Scenario 4 in the manuscript (see <a href="https://github.com/Mavis-Liang/Bayesian_integrative_FA_tutorial/blob/main/functions/gen_scenario4.R">code</a>. Note that instead of having 6 studies, this simulated data has 12 studies.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"./Data/dataLAT_projale2.rda"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -910,17 +931,22 @@ Number of negative values: 6707 </code></pre>
 <span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"BMSFA: "</span>, mse_BMSFA <span class="sc">%&gt;%</span> <span class="fu">round</span>(<span class="dv">3</span>)))</span>
 <span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"Tetris: "</span>, mse_Tetris <span class="sc">%&gt;%</span> <span class="fu">round</span>(<span class="dv">3</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "Stack FA: 0.513"
+<pre><code>[1] "Stack FA: 0.514"
 [1] "Ind FA: 0.493"
-[1] "PFA: 0.7"
-[1] "MOM-SS: 0.486"
-[1] "SUFA: 0.448"
-[1] "BMSFA: 0.464"
-[1] "Tetris: 0.289"</code></pre>
+[1] "PFA: 0.688"
+[1] "MOM-SS: 0.483"
+[1] "SUFA: 0.447"
+[1] "BMSFA: 0.465"
+[1] "Tetris: 0.288"</code></pre>
 </div>
 </div>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-de2022shared" class="csl-entry" role="listitem">
+De Vito, Roberta, Briana Stephenson, Daniela Sotres-Alvarez, Anna-Maria Siega-Riz, Josiemer Mattei, Maria Parpinel, Brandilyn A Peters, et al. 2022. <span>“Shared and Ethnic Background Site-Specific Dietary Patterns in the Hispanic Community Health Study/Study of Latinos (HCHS/SOL).”</span> <em>medRxiv</em>, 2022–06.
+</div>
+</div>
 </section>
 
 </main> <!-- /main -->
