@@ -273,18 +273,18 @@ window.Quarto = {
 
 <section id="welcome" class="level1 unnumbered">
 <h1 class="unnumbered">Welcome</h1>
-<p>This is the tutorial to guide the use of Bayesian integrative factor models. Including Stack FA (Stacking data from all the studies and apply FA), Ind FA (applying FA to each study separatly), PFA (Perturbed Factor Analysis) <span class="citation" data-cites="Roy2021PfaA">(<a href="references.html#ref-Roy2021PfaA" role="doc-biblioref">Roy et al. 2021</a>)</span>, MOM-SS (Bayesian Factor Regression with the non-local spike-and-slab priors) <span class="citation" data-cites="Avalos2022HLDI">(<a href="references.html#ref-Avalos2022HLDI" role="doc-biblioref">Avalos-Pacheco, Rossell, and Savage 2022</a>)</span>, SUFA (Subspace Factor Analysis) <span class="citation" data-cites="chandra2024inferring">(<a href="references.html#ref-chandra2024inferring" role="doc-biblioref">Chandra, Dunson, and Xu 2024</a>)</span>, BMSFA (Bayesian Multi-study Factor Analysis) <span class="citation" data-cites="de2021bayesian">(<a href="references.html#ref-de2021bayesian" role="doc-biblioref">De Vito et al. 2021</a>)</span> and Tetris <span class="citation" data-cites="grabski2023bayesian">(<a href="references.html#ref-grabski2023bayesian" role="doc-biblioref">Grabski et al. 2023</a>)</span>.</p>
+<p>This is the tutorial to guide the use of Bayesian integrative factor models. Including naive methods Stack FA (Stacking data from all the studies and apply FA), Ind FA (applying FA to each study separatly), and advanced methods PFA (Perturbed Factor Analysis) <span class="citation" data-cites="Roy2021PfaA">(<a href="references.html#ref-Roy2021PfaA" role="doc-biblioref">Roy et al. 2021</a>)</span>, MOM-SS (Bayesian Factor Regression with the non-local spike-and-slab priors) <span class="citation" data-cites="Avalos2022HLDI">(<a href="references.html#ref-Avalos2022HLDI" role="doc-biblioref">Avalos-Pacheco, Rossell, and Savage 2022</a>)</span>, SUFA (Subspace Factor Analysis) <span class="citation" data-cites="chandra2024inferring">(<a href="references.html#ref-chandra2024inferring" role="doc-biblioref">Chandra, Dunson, and Xu 2024</a>)</span>, BMSFA (Bayesian Multi-study Factor Analysis) <span class="citation" data-cites="de2021bayesian">(<a href="references.html#ref-de2021bayesian" role="doc-biblioref">De Vito et al. 2021</a>)</span> and Tetris <span class="citation" data-cites="grabski2023bayesian">(<a href="references.html#ref-grabski2023bayesian" role="doc-biblioref">Grabski et al. 2023</a>)</span>.</p>
 <p>Full intro to the multi-study data and comparison for these methods can be found in the manuscript. Raw code can be found the the GitHub repository (<a href="https://github.com/Mavis-Liang/Bayesian_integrative_FA_tutorial/tree/main">https://github.com/Mavis-Liang/Bayesian_integrative_FA_tutorial/tree/main</a>)</p>
 <section id="quick-start" class="level2">
 <h2 class="anchored" data-anchor-id="quick-start">Quick start</h2>
 <p><strong>Step 1: Prepare the package and data</strong></p>
-<p>A small simulated data can be downloaded here:</p>
-<p><a href="https://github.com/Mavis-Liang/Bayesian_integrative_FA_tutorial/raw/refs/heads/main/RDS/sim_B_small.rds">A small simulated data</a> (if it does not trigger instant download, you can go to the repo provided above and find it under folder <code>RDS</code>).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("remotes")</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># remotes::install_github("rdevito/MSFA")</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MSFA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>A small simulated data can be downloaded here:</p>
+<p><a href="https://github.com/Mavis-Liang/Bayesian_integrative_FA_tutorial/raw/refs/heads/main/RDS/sim_B_small.rds">A small simulated data</a> (if it does not trigger instant download, you can go to the repo provided above and find it under folder <code>RDS</code>).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"Data/sim_B_small.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -349,66 +349,54 @@ r= 5000 </code></pre>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: package 'stringr' was built under R version 4.2.3</code></pre>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.1.4     ✔ readr     2.1.4
-✔ forcats   1.0.0     ✔ stringr   1.5.1
-✔ ggplot2   3.5.1     ✔ tibble    3.2.1
-✔ lubridate 1.9.2     ✔ tidyr     1.3.1
-✔ purrr     1.0.1     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>post_BMSFA <span class="ot">&lt;-</span> <span class="cf">function</span>(fit){</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Common covariance matrix and loading</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  est_Phi <span class="ot">&lt;-</span> MSFA<span class="sc">::</span><span class="fu">sp_OP</span>(fit<span class="sc">$</span>Phi, <span class="at">trace=</span><span class="cn">FALSE</span>)<span class="sc">$</span>Phi</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  est_SigmaPhi <span class="ot">&lt;-</span> <span class="fu">tcrossprod</span>(est_Phi)</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Study-specific covariance matrices and loadings</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  est_LambdaList <span class="ot">&lt;-</span> <span class="fu">lapply</span>(fit<span class="sc">$</span>Lambda, <span class="cf">function</span>(x) MSFA<span class="sc">::</span><span class="fu">sp_OP</span>(x, <span class="at">trace=</span><span class="cn">FALSE</span>)<span class="sc">$</span>Phi)</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  est_SigmaLambdaList <span class="ot">&lt;-</span> <span class="fu">lapply</span>(est_LambdaList, <span class="cf">function</span>(x) <span class="fu">tcrossprod</span>(x))</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Marginal covariance matrices</span></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  S <span class="ot">&lt;-</span> <span class="fu">length</span>(est_SigmaLambdaList)</span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Get point estimate of each Psi_s</span></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  est_PsiList <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>S, <span class="cf">function</span>(s) {</span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">apply</span>(fit<span class="sc">$</span>psi[[s]], <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), mean)</span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  })</span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  est_margin_cov <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>S, <span class="cf">function</span>(s) {</span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    est_SigmaPhi <span class="sc">+</span> est_SigmaLambdaList[[s]] <span class="sc">+</span> <span class="fu">diag</span>(est_PsiList[[s]] <span class="sc">%&gt;%</span> <span class="fu">as.vector</span>())</span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  })</span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">Phi =</span> est_Phi, <span class="at">SigmaPhi =</span> est_SigmaPhi,</span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">LambdaList =</span> est_LambdaList, <span class="at">SigmaLambdaList =</span> est_SigmaLambdaList,</span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>         <span class="at">PsiList =</span> est_PsiList,</span>
-<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>         <span class="at">SigmaMarginal =</span> est_margin_cov))</span>
-<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>out1 <span class="ot">&lt;-</span> <span class="fu">post_BMSFA</span>(fit1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>post_BMSFA <span class="ot">&lt;-</span> <span class="cf">function</span>(fit){</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Common covariance matrix and loading</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  est_Phi <span class="ot">&lt;-</span> MSFA<span class="sc">::</span><span class="fu">sp_OP</span>(fit<span class="sc">$</span>Phi, <span class="at">trace=</span><span class="cn">FALSE</span>)<span class="sc">$</span>Phi</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  est_SigmaPhi <span class="ot">&lt;-</span> <span class="fu">tcrossprod</span>(est_Phi)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Study-specific covariance matrices and loadings</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  est_LambdaList <span class="ot">&lt;-</span> <span class="fu">lapply</span>(fit<span class="sc">$</span>Lambda, <span class="cf">function</span>(x) MSFA<span class="sc">::</span><span class="fu">sp_OP</span>(x, <span class="at">trace=</span><span class="cn">FALSE</span>)<span class="sc">$</span>Phi)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  est_SigmaLambdaList <span class="ot">&lt;-</span> <span class="fu">lapply</span>(est_LambdaList, <span class="cf">function</span>(x) <span class="fu">tcrossprod</span>(x))</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Marginal covariance matrices</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  S <span class="ot">&lt;-</span> <span class="fu">length</span>(est_SigmaLambdaList)</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Get point estimate of each Psi_s</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  est_PsiList <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>S, <span class="cf">function</span>(s) {</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">apply</span>(fit<span class="sc">$</span>psi[[s]], <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), mean)</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>  est_margin_cov <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>S, <span class="cf">function</span>(s) {</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>    est_SigmaPhi <span class="sc">+</span> est_SigmaLambdaList[[s]] <span class="sc">+</span> <span class="fu">diag</span>(est_PsiList[[s]] <span class="sc">%&gt;%</span> <span class="fu">as.vector</span>())</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">Phi =</span> est_Phi, <span class="at">SigmaPhi =</span> est_SigmaPhi,</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">LambdaList =</span> est_LambdaList, <span class="at">SigmaLambdaList =</span> est_SigmaLambdaList,</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>         <span class="at">PsiList =</span> est_PsiList,</span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>         <span class="at">SigmaMarginal =</span> est_margin_cov))</span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>out1 <span class="ot">&lt;-</span> <span class="fu">post_BMSFA</span>(fit1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now, determine the number of factors using eigen value decomposition (EVD).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtain the eigen values from the common covariance matrix</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>val_eigen_SigmaPhi <span class="ot">&lt;-</span> <span class="fu">eigen</span>(out1<span class="sc">$</span>SigmaPhi)<span class="sc">$</span>values</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Proportion of variance explained by each eigen value</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>prop_var_SigmaPhi <span class="ot">&lt;-</span> val_eigen_SigmaPhi<span class="sc">/</span><span class="fu">sum</span>(val_eigen_SigmaPhi)</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Choose the number of factors - factors that explain more than 5% of the variance</span></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>choose_K_SigmaPhi <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">which</span>(prop_var_SigmaPhi <span class="sc">&gt;</span> <span class="fl">0.05</span>))</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Similarly, for each study-specific covariance matrix:</span></span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>val_eigen_SigmaLambdaList <span class="ot">&lt;-</span> <span class="fu">lapply</span>(out1<span class="sc">$</span>SigmaLambdaList, <span class="cf">function</span>(x) <span class="fu">eigen</span>(x)<span class="sc">$</span>values)</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>prop_var_SigmaLambdaList <span class="ot">&lt;-</span> <span class="fu">lapply</span>(val_eigen_SigmaLambdaList, <span class="cf">function</span>(x) x<span class="sc">/</span><span class="fu">sum</span>(x))</span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>choose_K_SigmaLambdaList <span class="ot">&lt;-</span> <span class="fu">lapply</span>(prop_var_SigmaLambdaList, <span class="cf">function</span>(x) <span class="fu">length</span>(<span class="fu">which</span>(x <span class="sc">&gt;</span> <span class="fl">0.05</span>)))</span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the output</span></span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>choose_K_SigmaPhi</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtain the eigen values from the common covariance matrix</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>val_eigen_SigmaPhi <span class="ot">&lt;-</span> <span class="fu">eigen</span>(out1<span class="sc">$</span>SigmaPhi)<span class="sc">$</span>values</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Proportion of variance explained by each eigen value</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>prop_var_SigmaPhi <span class="ot">&lt;-</span> val_eigen_SigmaPhi<span class="sc">/</span><span class="fu">sum</span>(val_eigen_SigmaPhi)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Choose the number of factors - factors that explain more than 5% of the variance</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>choose_K_SigmaPhi <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">which</span>(prop_var_SigmaPhi <span class="sc">&gt;</span> <span class="fl">0.05</span>))</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Similarly, for each study-specific covariance matrix:</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>val_eigen_SigmaLambdaList <span class="ot">&lt;-</span> <span class="fu">lapply</span>(out1<span class="sc">$</span>SigmaLambdaList, <span class="cf">function</span>(x) <span class="fu">eigen</span>(x)<span class="sc">$</span>values)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>prop_var_SigmaLambdaList <span class="ot">&lt;-</span> <span class="fu">lapply</span>(val_eigen_SigmaLambdaList, <span class="cf">function</span>(x) x<span class="sc">/</span><span class="fu">sum</span>(x))</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>choose_K_SigmaLambdaList <span class="ot">&lt;-</span> <span class="fu">lapply</span>(prop_var_SigmaLambdaList, <span class="cf">function</span>(x) <span class="fu">length</span>(<span class="fu">which</span>(x <span class="sc">&gt;</span> <span class="fl">0.05</span>)))</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the output</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>choose_K_SigmaPhi</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 4</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(choose_K_SigmaLambdaList)){</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Study"</span>, s, <span class="st">"has"</span>, choose_K_SigmaLambdaList[[s]], <span class="st">"factors.</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(choose_K_SigmaLambdaList)){</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Study"</span>, s, <span class="st">"has"</span>, choose_K_SigmaLambdaList[[s]], <span class="st">"factors.</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Study 1 has 1 factors.
 Study 2 has 1 factors.
@@ -417,9 +405,9 @@ Study 3 has 2 factors.</code></pre>
 </div>
 <p>Now we rerun the model with the number of factors we just determined. And again we post-process the MCMC chains with <code>post_BMSFA()</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> MSFA<span class="sc">::</span><span class="fu">sp_msfa</span>(data<span class="sc">$</span>Y_list, <span class="at">k =</span> <span class="dv">4</span>, <span class="at">j_s =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>),</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">scaling =</span> <span class="cn">FALSE</span>, <span class="at">centering =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">control =</span> <span class="fu">list</span>(<span class="at">nrun =</span> <span class="dv">5000</span>, <span class="at">burn =</span> <span class="dv">4000</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> MSFA<span class="sc">::</span><span class="fu">sp_msfa</span>(data<span class="sc">$</span>Y_list, <span class="at">k =</span> <span class="dv">4</span>, <span class="at">j_s =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>),</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">scaling =</span> <span class="cn">FALSE</span>, <span class="at">centering =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>                      <span class="at">control =</span> <span class="fu">list</span>(<span class="at">nrun =</span> <span class="dv">5000</span>, <span class="at">burn =</span> <span class="dv">4000</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>r= 1000 
 r= 2000 
@@ -427,22 +415,22 @@ r= 3000
 r= 4000 
 r= 5000 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>out2 <span class="ot">&lt;-</span> <span class="fu">post_BMSFA</span>(fit2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>out2 <span class="ot">&lt;-</span> <span class="fu">post_BMSFA</span>(fit2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>Step 4: Check our results</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># For example, view the loading matrix</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(out2<span class="sc">$</span>Phi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># For example, view the loading matrix</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(out2<span class="sc">$</span>Phi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>            [,1]      [,2]       [,3]      [,4]
-[1,]  0.38059537 0.1216843 -0.2535186 1.1540750
-[2,]  0.12641191 0.1577687 -0.2715606 1.2105230
-[3,] -0.02325051 0.2696669 -0.2896459 0.9134814
-[4,] -0.08120898 0.1265806 -0.2589209 0.7427115
-[5,] -0.17159448 0.2241324 -0.1779806 0.4790277
-[6,] -0.27692877 0.2961966 -0.2157143 0.3567076</code></pre>
+<pre><code>           [,1]        [,2]        [,3]      [,4]
+[1,] -0.6373166 -0.34276327 -0.13956761 1.0192850
+[2,] -0.6871402 -0.07424590 -0.10575282 1.0526796
+[3,] -0.6792167  0.05283224 -0.03883455 0.7345121
+[4,] -0.4986423  0.10930463 -0.10378542 0.6187049
+[5,] -0.4223470  0.17664946  0.02720152 0.3503113
+[6,] -0.4633988  0.27515377  0.04920421 0.2151746</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(out2<span class="sc">$</span>Phi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(out2<span class="sc">$</span>Phi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 20  4</code></pre>
 </div>

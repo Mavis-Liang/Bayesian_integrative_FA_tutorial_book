@@ -263,7 +263,7 @@ window.Quarto = {
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>In this demonstration, we use the curate Ovarian data<span class="citation" data-cites="ganzfried2013curatedovariandata">(<a href="references.html#ref-ganzfried2013curatedovariandata" role="doc-biblioref">2013</a>)</span> to demonstrate (1) the common gene co-expression network drawn by <span class="math inline">\(\Sigma_\Phi\)</span> and (2) the fit of the models via calculating MSE. This data contains the gene expression and clinical outcomes of 2970 patients collected from 23 studies. Different studies have different sequencing platforms, sample sizes, stage/subtype of the tumor, survival and censoring information.</p>
+<p>In this demonstration, we use the curate Ovarian data <span class="citation" data-cites="ganzfried2013curatedovariandata">(<a href="references.html#ref-ganzfried2013curatedovariandata" role="doc-biblioref">Ganzfried et al. 2013</a>)</span> to demonstrate (1) the common gene co-expression network drawn by <span class="math inline">\(\Sigma_\Phi\)</span> and (2) the fit of the models via calculating MSE. This data contains the gene expression and clinical outcomes of 2970 patients collected from 23 studies. Different studies have different sequencing platforms, sample sizes, stage/subtype of the tumor, survival and censoring information.</p>
 <section id="loading-and-previewing-the-data" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="loading-and-previewing-the-data"><span class="header-section-number">3.1</span> Loading and previewing the data</h2>
 <p>We load the <code>curatedOvarianData</code> package to get the data. Description of each study can be found with <code>data(package="curatedOvarianData")</code>.</p>
@@ -506,7 +506,7 @@ window.Quarto = {
 </section>
 <section id="visualization" class="level2" data-number="3.5">
 <h2 data-number="3.5" class="anchored" data-anchor-id="visualization"><span class="header-section-number">3.5</span> Visualization</h2>
-<p>We can visualize the common gene co-expression network using the estimated covariance matrices. We use Gephi to visualize the networks. The <code>SigmaPhi</code> matrix is the common covariance matrix, and <code>SigmaLambda</code> is the study-specific covariance matrix.</p>
+<p>We can visualize the common gene co-expression network using the estimated common covariance matrices. We use Gephi to visualize the networks. The <code>SigmaPhi</code> matrix is the common covariance matrix, and <code>SigmaLambda</code> is the study-specific covariance matrix.</p>
 <p>Before that, we need to filter the genes so that only genes with high correlations are kept (leaving around 200 genes in the plot). We set the threshold for each model as follows:</p>
 <ul>
 <li>Stack FA: 0.85</li>
@@ -591,28 +591,33 @@ window.Quarto = {
 </div>
 <p>Attached are the final figures make with Gephi. The nodes are the genes and the edges are the correlations between the genes. The thickness of the edges indicates the strength of the correlation. The color of the nodes indicates the study they belong to. The size of the nodes indicates the number of connections they have.</p>
 <p>Stack FA:</p>
-<p><embed src="./Figs/network_StackFA.pdf" class="img-fluid quarto-figure quarto-figure-center" style="width:65.0%"> PFA:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><embed src="./Figs/network_PFA.pdf" class="img-fluid quarto-figure quarto-figure-center" style="width:65.0%"></p>
+<p><embed src="./Figs/network_StackFA.pdf" class="img-fluid quarto-figure quarto-figure-center" style="width:80.0%"></p>
+</figure>
+</div>
+<p>PFA:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><embed src="./Figs/network_PFA.pdf" class="img-fluid quarto-figure quarto-figure-center" style="width:80.0%"></p>
 </figure>
 </div>
 <p>MOM-SS:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><embed src="./Figs/network_MOMSS.pdf" class="img-fluid quarto-figure quarto-figure-center" style="width:65.0%"></p>
+<p><embed src="./Figs/network_MOMSS.pdf" class="img-fluid quarto-figure quarto-figure-center" style="width:80.0%"></p>
 </figure>
 </div>
 <p>SUFA:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><embed src="./Figs/network_SUFA.pdf" class="img-fluid quarto-figure quarto-figure-center" style="width:65.0%"></p>
+<p><embed src="./Figs/network_SUFA.pdf" class="img-fluid quarto-figure quarto-figure-center" style="width:80.0%"></p>
 </figure>
 </div>
 <p>BMSFA:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><embed src="./Figs/network_BMSFA.pdf" class="img-fluid quarto-figure quarto-figure-center" style="width:65.0%"></p>
+<p><embed src="./Figs/network_BMSFA.pdf" class="img-fluid quarto-figure quarto-figure-center" style="width:80.0%"></p>
 </figure>
 </div>
 
