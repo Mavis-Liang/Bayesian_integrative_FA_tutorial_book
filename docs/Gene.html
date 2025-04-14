@@ -233,6 +233,7 @@ window.Quarto = {
   <li><a href="#data-pre-processing" id="toc-data-pre-processing" class="nav-link" data-scroll-target="#data-pre-processing"><span class="header-section-number">3.2</span> Data pre-processing</a></li>
   <li><a href="#fitting-the-models" id="toc-fitting-the-models" class="nav-link" data-scroll-target="#fitting-the-models"><span class="header-section-number">3.3</span> Fitting the models</a></li>
   <li><a href="#post-processing" id="toc-post-processing" class="nav-link" data-scroll-target="#post-processing"><span class="header-section-number">3.4</span> Post-processing</a></li>
+  <li><a href="#visualization" id="toc-visualization" class="nav-link" data-scroll-target="#visualization"><span class="header-section-number">3.5</span> Visualization</a></li>
   </ul>
 </nav>
     </div>
@@ -354,6 +355,7 @@ window.Quarto = {
 <section id="fitting-the-models" class="level2" data-number="3.3">
 <h2 data-number="3.3" class="anchored" data-anchor-id="fitting-the-models"><span class="header-section-number">3.3</span> Fitting the models</h2>
 <p>For models fitted with <code>MSFA::sp_fa</code>, the function provides <code>scaling</code> and <code>centering</code> arguments. Therefore, we do not need to use the scaled data before fitting (here I use Mavis’s version of MSFA).</p>
+<p>Stack FA and Ind FA:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>Y_mat <span class="ot">=</span>  Y_list <span class="sc">%&gt;%</span> <span class="fu">do.call</span>(rbind, .) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>()</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>fit_stackFA <span class="ot">&lt;-</span> MSFA<span class="sc">::</span><span class="fu">sp_fa</span>(Y_mat, <span class="at">k =</span> <span class="dv">6</span>, <span class="at">scaling =</span> <span class="cn">FALSE</span>, <span class="at">centering =</span> <span class="cn">TRUE</span>, </span>
@@ -411,10 +413,207 @@ window.Quarto = {
 <section id="post-processing" class="level2" data-number="3.4">
 <h2 data-number="3.4" class="anchored" data-anchor-id="post-processing"><span class="header-section-number">3.4</span> Post-processing</h2>
 <p>We use the <code>post_xxx()</code> functions defined in the chapter of nutrition applications to post-process for point estimates of the factor loadings, common factors, and covariance matrices.</p>
-<p>For Stack FA, Ind FA and BMSFA, we need to determine the number of common factors <span class="math inline">\(K\)</span> and the number of latent dimensions <span class="math inline">\(j_s\)</span> for each study after the post-processing, and we need to re-run those models.</p>
+<p>For Stack FA, Ind FA and BMSFA, we need to determine the number of common factors <span class="math inline">\(K\)</span> and the number of latent dimensions <span class="math inline">\(J_s\)</span> for each study after the post-processing, and we need to re-run those models.</p>
 <p>Here we start with Stack FA, Ind FA and BMSFA:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stack FA</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stack FA</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>res_stackFA <span class="ot">=</span> <span class="fu">post_stackFA</span>(fit_stackFA, <span class="at">S=</span><span class="dv">4</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Ind FA</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>res_IndFA <span class="ot">=</span> <span class="fu">post_IndFA</span>(fit_indFA)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co"># BMSFA</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>res_BMSFA <span class="ot">=</span> <span class="fu">post_BMSFA</span>(fit_BMSFA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Eigenvalue decomposition</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>fun_eigen <span class="ot">&lt;-</span> <span class="cf">function</span>(Sig_mean) {</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  val_eigen <span class="ot">&lt;-</span> <span class="fu">eigen</span>(Sig_mean)<span class="sc">$</span>values</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  prop_var <span class="ot">&lt;-</span> val_eigen<span class="sc">/</span><span class="fu">sum</span>(val_eigen)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  choose_K <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">which</span>(prop_var <span class="sc">&gt;</span> <span class="fl">0.05</span>))</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(choose_K)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>SigmaPhi_StackFA <span class="ot">&lt;-</span> res_stackFA<span class="sc">$</span>SigmaPhi</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>K_StackFA <span class="ot">&lt;-</span> <span class="fu">fun_eigen</span>(SigmaPhi_StackFA)</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>SigmaLambda_IndFA <span class="ot">&lt;-</span> res_IndFA<span class="sc">$</span>SigmaLambda</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>Js_IndFA <span class="ot">&lt;-</span> <span class="fu">lapply</span>(SigmaLambda_IndFA, fun_eigen)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>SigmaPhi_BMSFA <span class="ot">&lt;-</span> res_BMSFA<span class="sc">$</span>SigmaPhi</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>K_BMSFA <span class="ot">&lt;-</span> <span class="fu">fun_eigen</span>(SigmaPhi_BMSFA)</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>SigmaLambda_BMSFA <span class="ot">&lt;-</span> res_BMSFA<span class="sc">$</span>SigmaLambda</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>Js_BMSFA <span class="ot">&lt;-</span> <span class="fu">lapply</span>(SigmaLambda_BMSFA, fun_eigen)</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="co"># We print the results:</span></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"Stack FA: K = "</span>, K_StackFA))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Stack FA: K = 2"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"Ind FA: J_s = "</span>, Js_IndFA))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Ind FA: J_s = 4" "Ind FA: J_s = 7" "Ind FA: J_s = 6" "Ind FA: J_s = 6"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"BMSFA: K = "</span>, K_BMSFA))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "BMSFA: K = 6"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"BMSFA: J_s = "</span>, Js_BMSFA))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "BMSFA: J_s = 4" "BMSFA: J_s = 4" "BMSFA: J_s = 4" "BMSFA: J_s = 4"</code></pre>
+</div>
+</div>
+<p>We then fit the models again with the determined number of factors and latent dimensions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stack FA</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>fit_stackFA2 <span class="ot">&lt;-</span> MSFA<span class="sc">::</span><span class="fu">sp_fa</span>(Y_mat, <span class="at">k =</span> K_StackFA, <span class="at">scaling =</span> <span class="cn">FALSE</span>, <span class="at">centering =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>                                <span class="at">control =</span> <span class="fu">list</span>(<span class="at">nrun =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">8000</span>))</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Ind FA</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>fit_indFA2 <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="cf">function</span>(s){</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  j_s <span class="ot">=</span> Js_IndFA[[s]]</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  MSFA<span class="sc">::</span><span class="fu">sp_fa</span>(Y_list[[s]], <span class="at">k =</span> j_s, <span class="at">scaling =</span> <span class="cn">FALSE</span>, <span class="at">centering =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">control =</span> <span class="fu">list</span>(<span class="at">nrun =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">8000</span>))</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="co"># BMSFA</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>fit_BMSFA2 <span class="ot">&lt;-</span> MSFA<span class="sc">::</span><span class="fu">sp_msfa</span>(Y_list, <span class="at">k =</span> K_BMSFA, <span class="at">j_s =</span> Js_BMSFA,</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>                            <span class="at">outputlevel =</span> <span class="dv">1</span>, <span class="at">scaling =</span> <span class="cn">TRUE</span>, <span class="at">centering =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>                            <span class="at">control =</span> <span class="fu">list</span>(<span class="at">nrun =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">8000</span>))</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Again we post-process the MCMC chains.</span></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>res_stackFA2 <span class="ot">&lt;-</span> <span class="fu">post_stackFA</span>(fit_stackFA2, <span class="at">S=</span><span class="dv">4</span>)</span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>res_IndFA2 <span class="ot">&lt;-</span> <span class="fu">post_IndFA</span>(fit_indFA2)</span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>res_BMSFA2 <span class="ot">&lt;-</span> <span class="fu">post_BMSFA</span>(fit_BMSFA2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>For the rest of the methods, the post-processing is straightforward.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># PFA</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>res_PFA <span class="ot">&lt;-</span> <span class="fu">post_PFA</span>(fit_PFA)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co"># columns have all loadings less than 10^-3</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>fun_neibour <span class="ot">&lt;-</span> <span class="cf">function</span>(Phi, <span class="at">threshold =</span> <span class="fl">1e-3</span>) {</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sum</span>(<span class="fu">apply</span>(Phi, <span class="dv">2</span>, <span class="cf">function</span>(x) {</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>      <span class="co"># if this column has all loadings less than threshold</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">sum</span>(<span class="fu">abs</span>(x) <span class="sc">&lt;=</span> threshold) <span class="sc">&lt;</span> <span class="fu">length</span>(x)}</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>K_PFA <span class="ot">&lt;-</span> <span class="fu">fun_neibour</span>(res_PFA<span class="sc">$</span>Phi)</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="co"># MOM-SS</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>res_MOMSS <span class="ot">&lt;-</span> <span class="fu">post_MOMSS</span>(fit_MOMSS)</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a><span class="co"># SUFA</span></span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>res_SUFA <span class="ot">&lt;-</span> <span class="fu">post_SUFA</span>(fit_SUFA)</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Tetris</span></span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a><span class="co">#res_Tetris &lt;- post_Tetris(fit_Tetris)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="visualization" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="visualization"><span class="header-section-number">3.5</span> Visualization</h2>
+<p>We can visualize the common gene co-expression network using the estimated covariance matrices. We use Gephi to visualize the networks. The <code>SigmaPhi</code> matrix is the common covariance matrix, and <code>SigmaLambda</code> is the study-specific covariance matrix.</p>
+<p>Before that, we need to filter the genes so that only genes with high correlations are kept (leaving around 200 genes in the plot). We set the threshold for each model as follows:</p>
+<ul>
+<li>Stack FA: 0.85</li>
+<li>MOM-SS: 0.95</li>
+<li>BMSFA: 0.5</li>
+<li>SUFA: 0.28</li>
+<li>PFA: 0.55</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtering genes for visualization in Gephi</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>genenames <span class="ot">&lt;-</span> <span class="fu">colnames</span>(list_gene[[<span class="dv">1</span>]])</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co"># StackFA</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>SigmaPhi_StackFA_curated <span class="ot">&lt;-</span> res_stackFA2<span class="sc">$</span>SigmaPhi</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(SigmaPhi_StackFA_curated) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(SigmaPhi_StackFA_curated) <span class="ot">&lt;-</span> genenames</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(SigmaPhi_StackFA_curated) <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>above_thresh <span class="ot">&lt;-</span> SigmaPhi_StackFA_curated <span class="sc">&gt;</span> <span class="fl">0.85</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>keep_genes <span class="ot">&lt;-</span> <span class="fu">apply</span>(above_thresh, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">any</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(keep_genes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 214</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>SigmaPhi_StackFA_curated[<span class="fu">abs</span>(SigmaPhi_StackFA_curated) <span class="sc">&lt;</span> <span class="fl">0.85</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>SigmaPhi_StackFA_curated_filtered <span class="ot">&lt;-</span> SigmaPhi_StackFA_curated[keep_genes, keep_genes]</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="co">#write.csv(SigmaPhi_StackFA_curated_filtered, "SigmaPhi_StackFA_curated_filtered.csv")</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="co"># MOM-SS</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>SigmaPhiMOMSS <span class="ot">&lt;-</span> res_MOMSS<span class="sc">$</span>SigmaPhi</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(SigmaPhiMOMSS) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(SigmaPhiMOMSS) <span class="ot">&lt;-</span> genenames</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(SigmaPhiMOMSS) <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>above_thresh <span class="ot">&lt;-</span> <span class="fu">abs</span>(SigmaPhiMOMSS) <span class="sc">&gt;</span> <span class="fl">0.95</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>keep_genes <span class="ot">&lt;-</span> <span class="fu">apply</span>(above_thresh, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">any</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(keep_genes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 223</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>SigmaPhiMOMSS[<span class="fu">abs</span>(SigmaPhiMOMSS) <span class="sc">&lt;</span> <span class="fl">0.95</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>SigmaPhiMOMSS_filtered <span class="ot">&lt;-</span> SigmaPhiMOMSS[keep_genes, keep_genes]</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="co">#write.csv(SigmaPhiMOMSS_filtered, "SigmaPhiMOMSS_filtered.csv")</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="co"># BMSFA</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>SigmaPhiBMSFA <span class="ot">&lt;-</span> res_BMSFA2<span class="sc">$</span>SigmaPhi</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(SigmaPhiBMSFA) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(SigmaPhiBMSFA) <span class="ot">&lt;-</span> genenames</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(SigmaPhiBMSFA) <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>above_thresh <span class="ot">&lt;-</span> <span class="fu">abs</span>(SigmaPhiBMSFA)  <span class="sc">&gt;</span> <span class="fl">0.5</span></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>keep_genes <span class="ot">&lt;-</span> <span class="fu">apply</span>(above_thresh, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">any</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(keep_genes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 192</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>SigmaPhiBMSFA[<span class="fu">abs</span>(SigmaPhiBMSFA) <span class="sc">&lt;</span> <span class="fl">0.5</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>SigmaPhiBMSFA_filtered <span class="ot">&lt;-</span> SigmaPhiBMSFA[keep_genes, keep_genes]</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="co">#write.csv(SigmaPhiBMSFA_filtered, "SigmaPhiBMSFA_filtered.csv")</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="co"># SUFA</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>SigmaPhiSUFA <span class="ot">&lt;-</span> res_SUFA<span class="sc">$</span>SigmaPhi</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(SigmaPhiSUFA) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(SigmaPhiSUFA) <span class="ot">&lt;-</span> genenames</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(SigmaPhiSUFA) <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>above_thresh <span class="ot">&lt;-</span> <span class="fu">abs</span>(SigmaPhiSUFA) <span class="sc">&gt;</span> <span class="fl">0.28</span></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>keep_genes <span class="ot">&lt;-</span> <span class="fu">apply</span>(above_thresh, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">any</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(keep_genes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 191</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>SigmaPhiSUFA[<span class="fu">abs</span>(SigmaPhiSUFA) <span class="sc">&lt;</span> <span class="fl">0.28</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>SigmaPhiSUFA_filtered <span class="ot">&lt;-</span> SigmaPhiSUFA[keep_genes, keep_genes]</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="co">#write.csv(SigmaPhiSUFA_filtered, "SigmaPhiSUFA_filtered.csv")</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a><span class="co"># PFA</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>SigmaPhiPFA <span class="ot">&lt;-</span> res_PFA<span class="sc">$</span>SigmaPhi</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(SigmaPhiPFA) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(SigmaPhiPFA) <span class="ot">&lt;-</span> genenames</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(SigmaPhiPFA) <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>above_thresh <span class="ot">&lt;-</span> <span class="fu">abs</span>(SigmaPhiPFA) <span class="sc">&gt;</span> <span class="fl">0.55</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>keep_genes <span class="ot">&lt;-</span> <span class="fu">apply</span>(above_thresh, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">any</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(keep_genes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 203</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>SigmaPhiPFA[<span class="fu">abs</span>(SigmaPhiPFA) <span class="sc">&lt;</span> <span class="fl">0.55</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>SigmaPhiPFA_filtered <span class="ot">&lt;-</span> SigmaPhiPFA[keep_genes, keep_genes]</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="co">#write.csv(SigmaPhiPFA_filtered, "SigmaPhiPFA_filtered.csv")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Attached are the final figures make with Gephi. The nodes are the genes and the edges are the correlations between the genes. The thickness of the edges indicates the strength of the correlation. The color of the nodes indicates the study they belong to. The size of the nodes indicates the number of connections they have.</p>
+<p>Stack FA:</p>
+<p><embed src="./Figs/network_StackFA.pdf" class="img-fluid quarto-figure quarto-figure-center" style="width:65.0%"> PFA:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><embed src="./Figs/network_PFA.pdf" class="img-fluid quarto-figure quarto-figure-center" style="width:65.0%"></p>
+</figure>
+</div>
+<p>MOM-SS:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><embed src="./Figs/network_MOMSS.pdf" class="img-fluid quarto-figure quarto-figure-center" style="width:65.0%"></p>
+</figure>
+</div>
+<p>SUFA:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><embed src="./Figs/network_SUFA.pdf" class="img-fluid quarto-figure quarto-figure-center" style="width:65.0%"></p>
+</figure>
+</div>
+<p>BMSFA:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><embed src="./Figs/network_BMSFA.pdf" class="img-fluid quarto-figure quarto-figure-center" style="width:65.0%"></p>
+</figure>
 </div>
 
 
