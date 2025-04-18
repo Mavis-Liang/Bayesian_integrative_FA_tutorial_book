@@ -388,7 +388,8 @@ window.Quarto = {
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">grpind =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, </span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">times =</span> N_s),</span>
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">Thin =</span> <span class="dv">5</span>,</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">Total_itr =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">8000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">Cutoff =</span> <span class="fl">0.001</span>,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">Total_itr =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">8000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>SUFA (takes about 10 hours):</p>
 <div class="cell">
@@ -482,26 +483,16 @@ window.Quarto = {
 <span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>res_IndFA2 <span class="ot">&lt;-</span> <span class="fu">post_IndFA</span>(fit_indFA2)</span>
 <span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>res_BMSFA2 <span class="ot">&lt;-</span> <span class="fu">post_BMSFA</span>(fit_BMSFA2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>For the rest of the methods, the post-processing is straightforward.</p>
+<p>For the rest of the methods, we apply the same post-processing functions as in the nutrition applications chapter.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># PFA</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>res_PFA <span class="ot">&lt;-</span> <span class="fu">post_PFA</span>(fit_PFA)</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co"># columns have all loadings less than 10^-3</span></span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>fun_neibour <span class="ot">&lt;-</span> <span class="cf">function</span>(Phi, <span class="at">threshold =</span> <span class="fl">1e-3</span>) {</span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(</span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sum</span>(<span class="fu">apply</span>(Phi, <span class="dv">2</span>, <span class="cf">function</span>(x) {</span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>      <span class="co"># if this column has all loadings less than threshold</span></span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">sum</span>(<span class="fu">abs</span>(x) <span class="sc">&lt;=</span> threshold) <span class="sc">&lt;</span> <span class="fu">length</span>(x)}</span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>    ))</span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>K_PFA <span class="ot">&lt;-</span> <span class="fu">fun_neibour</span>(res_PFA<span class="sc">$</span>Phi)</span>
-<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="co"># MOM-SS</span></span>
-<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>res_MOMSS <span class="ot">&lt;-</span> <span class="fu">post_MOMSS</span>(fit_MOMSS)</span>
-<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a><span class="co"># SUFA</span></span>
-<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>res_SUFA <span class="ot">&lt;-</span> <span class="fu">post_SUFA</span>(fit_SUFA)</span>
-<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Tetris</span></span>
-<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a><span class="co">#res_Tetris &lt;- post_Tetris(fit_Tetris)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co"># MOM-SS</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>res_MOMSS <span class="ot">&lt;-</span> <span class="fu">post_MOMSS</span>(fit_MOMSS)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="co"># SUFA</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>res_SUFA <span class="ot">&lt;-</span> <span class="fu">post_SUFA</span>(fit_SUFA)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Tetris</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="co">#res_Tetris &lt;- post_Tetris(fit_Tetris)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="visualization" class="level2" data-number="3.5">
@@ -593,31 +584,31 @@ window.Quarto = {
 <p>Stack FA:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><embed src="./Figs/network_StackFA.pdf" class="img-fluid quarto-figure quarto-figure-center" style="width:80.0%"></p>
+<p><img src="./Figs/network_StackFA_00.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%"></p>
 </figure>
 </div>
 <p>PFA:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><embed src="./Figs/network_PFA.pdf" class="img-fluid quarto-figure quarto-figure-center" style="width:80.0%"></p>
+<p><img src="./Figs/network_PFA_00.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%"></p>
 </figure>
 </div>
 <p>MOM-SS:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><embed src="./Figs/network_MOMSS.pdf" class="img-fluid quarto-figure quarto-figure-center" style="width:80.0%"></p>
+<p><img src="./Figs/network_MOMSS_00.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%"></p>
 </figure>
 </div>
 <p>SUFA:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><embed src="./Figs/network_SUFA.pdf" class="img-fluid quarto-figure quarto-figure-center" style="width:80.0%"></p>
+<p><img src="./Figs/network_SUFA_00.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%"></p>
 </figure>
 </div>
 <p>BMSFA:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><embed src="./Figs/network_BMSFA.pdf" class="img-fluid quarto-figure quarto-figure-center" style="width:80.0%"></p>
+<p><img src="./Figs/network_BMSFA_00.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%"></p>
 </figure>
 </div>
 

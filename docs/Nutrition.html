@@ -405,12 +405,11 @@ Number of negative values: 6707 </code></pre>
 <section id="model-fitting" class="level2" data-number="2.3">
 <h2 data-number="2.3" class="anchored" data-anchor-id="model-fitting"><span class="header-section-number">2.3</span> Model fitting</h2>
 <p>We recommend running model fitting and post-processing in a high-performance computing environment, as the model fitting process can be computationally intensive. PFA and Tetris are particularly computationally expensive, where PFA requires more than 10 hours to run, and Tetris requires more than 4 days to run. Other models can be completed in half an hour. We recommend at least 5GB of memory for running the models and post-processing.</p>
-<p>For each model, we over-specify the numbers of factors to .. [to be written].</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Stack FA</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>Y_mat <span class="ot">=</span>  Y_list <span class="sc">%&gt;%</span> <span class="fu">do.call</span>(rbind, .) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>()</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>fit_stackFA <span class="ot">&lt;-</span> MSFA<span class="sc">::</span><span class="fu">sp_fa</span>(Y_mat, <span class="at">k =</span> <span class="dv">6</span>, <span class="at">scaling =</span> <span class="cn">FALSE</span>, <span class="at">centering =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                              <span class="at">control =</span> <span class="fu">list</span>(<span class="at">nrun =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">800</span>))</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                              <span class="at">control =</span> <span class="fu">list</span>(<span class="at">nrun =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">8000</span>))</span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Ind FA</span></span>
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>fit_indFA <span class="ot">&lt;-</span></span>
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="cf">function</span>(s){</span>
@@ -426,29 +425,30 @@ Number of negative values: 6707 </code></pre>
 <span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>                        <span class="at">grpind =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>,</span>
 <span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">times =</span> N_s),</span>
 <span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>                <span class="at">Thin =</span> <span class="dv">5</span>,</span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>                <span class="at">Total_itr =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">8000</span>)</span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a><span class="co"># MOM-SS</span></span>
-<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>Y_mat <span class="ot">=</span>  Y_list <span class="sc">%&gt;%</span> <span class="fu">do.call</span>(rbind, .) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>()</span>
-<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Construct the membership matrix</span></span>
-<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>N_s <span class="ot">&lt;-</span> <span class="fu">sapply</span>(Y_list, nrow)</span>
-<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>M_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>   <span class="cf">for</span>(s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>){</span>
-<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>     M_list[[s]] <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span>, <span class="at">nrow =</span> N_s[s], <span class="at">ncol =</span> <span class="dv">1</span>)</span>
-<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>   }</span>
-<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>M <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">bdiag</span>(M_list))</span>
-<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>fit_MOMSS <span class="ot">&lt;-</span> BFR.BE<span class="sc">::</span><span class="fu">BFR.BE.EM.CV</span>(<span class="at">x =</span> Y_mat, <span class="at">v =</span> <span class="cn">NULL</span>, </span>
-<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">b =</span> M, <span class="at">q =</span> <span class="dv">6</span>, <span class="at">scaling =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>                <span class="at">Cutoff =</span> <span class="fl">0.001</span>,</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>                <span class="at">Total_itr =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">8000</span>)</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a><span class="co"># MOM-SS</span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>Y_mat <span class="ot">=</span>  Y_list <span class="sc">%&gt;%</span> <span class="fu">do.call</span>(rbind, .) <span class="sc">%&gt;%</span> <span class="fu">as.matrix</span>()</span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Construct the membership matrix</span></span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>N_s <span class="ot">&lt;-</span> <span class="fu">sapply</span>(Y_list, nrow)</span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>M_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>   <span class="cf">for</span>(s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>){</span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>     M_list[[s]] <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span>, <span class="at">nrow =</span> N_s[s], <span class="at">ncol =</span> <span class="dv">1</span>)</span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>   }</span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>M <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">bdiag</span>(M_list))</span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>fit_MOMSS <span class="ot">&lt;-</span> BFR.BE<span class="sc">::</span><span class="fu">BFR.BE.EM.CV</span>(<span class="at">x =</span> Y_mat, <span class="at">v =</span> <span class="cn">NULL</span>, </span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">b =</span> M, <span class="at">q =</span> <span class="dv">6</span>, <span class="at">scaling =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a><span class="co"># SUFA</span></span>
-<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>fit_SUFA <span class="ot">&lt;-</span> SUFA<span class="sc">::</span><span class="fu">fit_SUFA</span>(Y_list_scaled, <span class="at">qmax=</span><span class="dv">6</span>, <span class="at">nrun =</span> <span class="dv">10000</span>)</span>
-<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a><span class="co"># BMSFA</span></span>
-<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a>fit_BMSFA <span class="ot">&lt;-</span> MSFA<span class="sc">::</span><span class="fu">sp_msfa</span>(Y_list, <span class="at">k =</span> <span class="dv">6</span>, <span class="at">j_s =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>),</span>
-<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a>                           <span class="at">outputlevel =</span> <span class="dv">1</span>, <span class="at">scaling =</span> <span class="cn">FALSE</span>, </span>
-<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a>                           <span class="at">centering =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a>                           <span class="at">control =</span> <span class="fu">list</span>(<span class="at">nrun =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">8000</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a><span class="co"># SUFA</span></span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a>fit_SUFA <span class="ot">&lt;-</span> SUFA<span class="sc">::</span><span class="fu">fit_SUFA</span>(Y_list_scaled, <span class="at">qmax=</span><span class="dv">6</span>, <span class="at">nrun =</span> <span class="dv">10000</span>)</span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a><span class="co"># BMSFA</span></span>
+<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a>fit_BMSFA <span class="ot">&lt;-</span> MSFA<span class="sc">::</span><span class="fu">sp_msfa</span>(Y_list, <span class="at">k =</span> <span class="dv">6</span>, <span class="at">j_s =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>),</span>
+<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a>                           <span class="at">outputlevel =</span> <span class="dv">1</span>, <span class="at">scaling =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a>                           <span class="at">centering =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a>                           <span class="at">control =</span> <span class="fu">list</span>(<span class="at">nrun =</span> <span class="dv">10000</span>, <span class="at">burn =</span> <span class="dv">8000</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Fitting Tetris requires a 3-step process. First, we run <code>tetris()</code> to draw posterior samples of the model parameters, including <span class="math inline">\(\mathcal{T}\)</span>. Then we run <code>choose.A()</code> to choose the best <span class="math inline">\(\mathcal{T}\)</span> based on the posterior samples. Finally, we run <code>tetris()</code> again with the chosen <span class="math inline">\(\mathcal{T}\)</span> to obtain the final model. Hyperparameters <span class="math inline">\(\alpha_{\mathcal{T}}\)</span> are set to 1.25 times the number of studies.</p>
 <div class="cell">
@@ -560,59 +560,84 @@ Number of negative values: 6707 </code></pre>
 <span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>res_Tetris <span class="ot">&lt;-</span> <span class="fu">post_Tetris</span>(run_fixed)</span>
 <span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(res_Tetris, <span class="st">"Data/Rnutrition_Tetris.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>For PFA, the post-processing is a little bit tricky. According to the original paper, the common loading matrix <span class="math inline">\(\Phi\)</span> can be just the average of the estimated loadings from the posterior samples. However, we still apply OP as in BMSFA to get the common loadings, and the loadings in PFA should be the product of the estimated loadings and the square root of the variance of the factors. Therefore, we carry out multiplication for <span class="math inline">\(\Phi\)</span> for each posterior sample, and then OP the sequence. We also carry out multiplication for <span class="math inline">\(Q_s\)</span>, <span class="math inline">\(\Sigma_{\Phi}\)</span>, <span class="math inline">\(\Sigma_{s}\)</span>, <span class="math inline">\(\Sigma_{\Lambda_s}\)</span>, and <span class="math inline">\(\Psi\)</span> as in the definition of PFA, and then take the average of the results.</p>
-<p>After that, the number of factors is determined by counting the number of columns in <span class="math inline">\(\Phi\)</span> that have all loadings less than <span class="math inline">\(10^{-3}\)</span>.</p>
+<p>The following code shows the post-processing for PFA.First, we post-process for the number of factors. We first extracts the number of factors <span class="math inline">\(K\)</span> for each posterior sample, by calculating the number of columns in the loadings matrix. Then we finds the mode <span class="math inline">\(K\)</span> of these values, and filter posterior samples to only those with the modal <span class="math inline">\(K\)</span>. We continue with the downstream summary using only those aligned samples. To get the common loadings by its definition, we first multiply <span class="math inline">\(\Phi\)</span> with <span class="math inline">\(V^{1/2}\)</span> in the samples we kept. While the common loading matrix <span class="math inline">\(\Phi\)</span> can be simply calculated by the average of the posterior <span class="math inline">\(\Phi V^{1/2}\)</span>, with its adjustment to address identifiability issues, we still apply OP to <span class="math inline">\(\Phi V^{1/2}\)</span>. For the covariances such as the common covariance, we calculate <span class="math inline">\(\Phi V\Phi^\top\)</span> at each iterations, and then use their average as the final results. Similar procedure is applied for the study-specific covariances and marginal covariance.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>post_PFA <span class="ot">&lt;-</span> <span class="cf">function</span>(fit){</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">nrow</span>(fit<span class="sc">$</span>Loading[[<span class="dv">1</span>]])</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  k <span class="ot">&lt;-</span> <span class="fu">ncol</span>(fit<span class="sc">$</span>Loading[[<span class="dv">1</span>]])</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  npost <span class="ot">&lt;-</span> <span class="fu">length</span>(fit<span class="sc">$</span>Loading)</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  Q_list <span class="ot">&lt;-</span> fit<span class="sc">$</span>Pertmat</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  S <span class="ot">&lt;-</span> <span class="fu">dim</span>(Q_list[[<span class="dv">1</span>]])[<span class="dv">2</span>]</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  posteriorPhis <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(p, k, npost))</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">#---estimated common loadings and shared variance---</span></span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Element-wise multiplication</span></span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>npost){</span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    posteriorPhis[,,i] <span class="ot">&lt;-</span> fit<span class="sc">$</span>Loading[[i]] <span class="sc">%*%</span> <span class="fu">diag</span>(fit<span class="sc">$</span>Latentsigma[[i]])</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Varimax for common loadings</span></span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  est_Phi <span class="ot">&lt;-</span> MSFA<span class="sc">::</span><span class="fu">sp_OP</span>(posteriorPhis, <span class="at">itermax =</span> <span class="dv">10</span>, <span class="at">trace =</span> <span class="cn">FALSE</span>)<span class="sc">$</span>Phi</span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Estimated shared covariance, study-specific covariance matrix, and SigmaMarginal</span></span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  sharevar <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  est_SigmaLambdaList <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>  est_SigmaMarginal <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>  est_Psi <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>S){ <span class="co"># Loop over each study</span></span>
-<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>  post_SigmaLambda_s <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>  post_SigmaMarginal_s <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>  Psi <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>npost){ <span class="co"># Loop over each posterior sample</span></span>
-<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>    sharevar[[i]] <span class="ot">&lt;-</span> fit<span class="sc">$</span>Loading[[i]]<span class="sc">%*%</span><span class="fu">diag</span>(fit<span class="sc">$</span>Latentsigma[[i]]<span class="sc">^</span><span class="dv">2</span>)<span class="sc">%*%</span><span class="fu">t</span>(fit<span class="sc">$</span>Loading[[i]]) <span class="sc">+</span> </span>
-<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>      <span class="fu">diag</span>(fit<span class="sc">$</span>Errorsigma[[i]]<span class="sc">^</span><span class="dv">2</span>) <span class="co"># Get the shared variance</span></span>
-<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>    Q_temp_inv <span class="ot">&lt;-</span> <span class="fu">solve</span>(</span>
-<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>      <span class="fu">matrix</span>(Q_list[[i]][, s], p, p)</span>
-<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>    post_SigmaMarginal_s[[i]] <span class="ot">&lt;-</span> Q_temp_inv<span class="sc">%*%</span>sharevar[[i]]<span class="sc">%*%</span><span class="fu">t</span>(Q_temp_inv)</span>
-<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>    post_SigmaLambda_s[[i]] <span class="ot">&lt;-</span> post_SigmaMarginal_s[[i]] <span class="sc">-</span> sharevar[[i]]</span>
-<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>    Psi[[i]] <span class="ot">&lt;-</span> <span class="fu">diag</span>(fit<span class="sc">$</span>Errorsigma[[i]]<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>  est_SigmaMarginal[[s]] <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="st">'+'</span>, post_SigmaMarginal_s)<span class="sc">/</span><span class="fu">length</span>(post_SigmaMarginal_s)</span>
-<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>  est_SigmaLambdaList[[s]] <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="st">'+'</span>, post_SigmaLambda_s)<span class="sc">/</span><span class="fu">length</span>(post_SigmaLambda_s)</span>
-<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>  est_Psi <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="st">'+'</span>, Psi)<span class="sc">/</span><span class="fu">length</span>(Psi)</span>
-<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a>  est_SigmaPhi <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="st">'+'</span>, sharevar)<span class="sc">/</span><span class="fu">length</span>(sharevar)</span>
-<span id="cb21-41"><a href="#cb21-41" aria-hidden="true" tabindex="-1"></a>  est_Q <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="st">'+'</span>, Q_list)<span class="sc">/</span><span class="fu">length</span>(Q_list)</span>
-<span id="cb21-42"><a href="#cb21-42" aria-hidden="true" tabindex="-1"></a>  est_Q_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>S, <span class="cf">function</span>(s) <span class="fu">matrix</span>(est_Q[, s], p, p))</span>
-<span id="cb21-43"><a href="#cb21-43" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb21-44"><a href="#cb21-44" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Return the results</span></span>
-<span id="cb21-45"><a href="#cb21-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">Phi =</span> est_Phi, <span class="at">SigmaPhi =</span> est_SigmaPhi, <span class="at">Psi =</span> est_Psi, <span class="at">Q =</span> est_Q_list,</span>
-<span id="cb21-46"><a href="#cb21-46" aria-hidden="true" tabindex="-1"></a>              <span class="at">SigmaLambdaList =</span> est_SigmaLambdaList,</span>
-<span id="cb21-47"><a href="#cb21-47" aria-hidden="true" tabindex="-1"></a>              <span class="at">SigmaMarginal =</span> est_SigmaMarginal))</span>
-<span id="cb21-48"><a href="#cb21-48" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb21-49"><a href="#cb21-49" aria-hidden="true" tabindex="-1"></a>res_PFA <span class="ot">&lt;-</span> <span class="fu">post_PFA</span>(fit_PFA)</span>
-<span id="cb21-50"><a href="#cb21-50" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(res_PFA, <span class="st">"Data/Rnutrition_PFA.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>post_PFA <span class="ot">&lt;-</span> <span class="cf">function</span>(fit) {</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Determine posterior dimension (number of factors per sample)</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  k_vec <span class="ot">&lt;-</span> <span class="fu">sapply</span>(fit<span class="sc">$</span>Loading, ncol)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  mode_k <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">names</span>(<span class="fu">sort</span>(<span class="fu">table</span>(k_vec), <span class="at">decreasing =</span> <span class="cn">TRUE</span>)[<span class="dv">1</span>]))</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filter posterior samples to those with mode_k</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  keep_idx <span class="ot">&lt;-</span> <span class="fu">which</span>(k_vec <span class="sc">==</span> mode_k)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  fit<span class="sc">$</span>Loading <span class="ot">&lt;-</span> fit<span class="sc">$</span>Loading[keep_idx]</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  fit<span class="sc">$</span>Latentsigma <span class="ot">&lt;-</span> fit<span class="sc">$</span>Latentsigma[keep_idx]</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  fit<span class="sc">$</span>Errorsigma <span class="ot">&lt;-</span> fit<span class="sc">$</span>Errorsigma[keep_idx]</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  fit<span class="sc">$</span>Pertmat <span class="ot">&lt;-</span> fit<span class="sc">$</span>Pertmat[keep_idx]</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  npost <span class="ot">&lt;-</span> <span class="fu">length</span>(fit<span class="sc">$</span>Loading)</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">nrow</span>(fit<span class="sc">$</span>Loading[[<span class="dv">1</span>]])</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  k <span class="ot">&lt;-</span> mode_k</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  S <span class="ot">&lt;-</span> <span class="fu">dim</span>(fit<span class="sc">$</span>Pertmat[[<span class="dv">1</span>]])[<span class="dv">2</span>]</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  posteriorPhis <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(p, k, npost))</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  posteriorLams <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="st">"list"</span>, S)</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>S){</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>    posteriorLams[[s]] <span class="ot">&lt;-</span> <span class="fu">array</span>(<span class="dv">0</span>, <span class="at">dim =</span> <span class="fu">c</span>(p, k, npost))</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>npost){</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>      posteriorPhis[,,i] <span class="ot">&lt;-</span> fit<span class="sc">$</span>Loading[[i]] <span class="sc">%*%</span> <span class="fu">diag</span>(fit<span class="sc">$</span>Latentsigma[[i]])</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>      posteriorLams[[s]][,,i] <span class="ot">&lt;-</span> (<span class="fu">solve</span>(<span class="fu">matrix</span>(fit<span class="sc">$</span>Pertmat[[i]][, s], p, p)) <span class="sc">-</span> <span class="fu">diag</span>(p)) <span class="sc">%*%</span> posteriorPhis[,,i]</span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Varimax rotation</span></span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>  est_Phi <span class="ot">&lt;-</span> MSFA<span class="sc">::</span><span class="fu">sp_OP</span>(posteriorPhis, <span class="at">itermax =</span> <span class="dv">10</span>, <span class="at">trace =</span> <span class="cn">FALSE</span>)<span class="sc">$</span>Phi</span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>  est_speLoad <span class="ot">&lt;-</span> <span class="fu">lapply</span>(posteriorLams, <span class="cf">function</span>(x) MSFA<span class="sc">::</span><span class="fu">sp_OP</span>(x, <span class="at">itermax =</span> <span class="dv">10</span>, <span class="at">trace =</span> <span class="cn">FALSE</span>)<span class="sc">$</span>Phi)</span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Estimated covariance components</span></span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>  sharevar <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>  est_SigmaLambdaList <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="st">"list"</span>, S)</span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>  est_SigmaMarginal <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="st">"list"</span>, S)</span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>  est_Psi_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(s <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>S){</span>
+<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a>    post_SigmaLambda_s <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="st">"list"</span>, npost)</span>
+<span id="cb21-41"><a href="#cb21-41" aria-hidden="true" tabindex="-1"></a>    post_SigmaMarginal_s <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="st">"list"</span>, npost)</span>
+<span id="cb21-42"><a href="#cb21-42" aria-hidden="true" tabindex="-1"></a>    Psi <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="st">"list"</span>, npost)</span>
+<span id="cb21-43"><a href="#cb21-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-44"><a href="#cb21-44" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>npost){</span>
+<span id="cb21-45"><a href="#cb21-45" aria-hidden="true" tabindex="-1"></a>      sharevar[[i]] <span class="ot">&lt;-</span> fit<span class="sc">$</span>Loading[[i]] <span class="sc">%*%</span> <span class="fu">diag</span>(fit<span class="sc">$</span>Latentsigma[[i]]<span class="sc">^</span><span class="dv">2</span>) <span class="sc">%*%</span> <span class="fu">t</span>(fit<span class="sc">$</span>Loading[[i]]) <span class="sc">+</span> </span>
+<span id="cb21-46"><a href="#cb21-46" aria-hidden="true" tabindex="-1"></a>        <span class="fu">diag</span>(fit<span class="sc">$</span>Errorsigma[[i]]<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb21-47"><a href="#cb21-47" aria-hidden="true" tabindex="-1"></a>      Q_temp_inv <span class="ot">&lt;-</span> <span class="fu">solve</span>(<span class="fu">matrix</span>(fit<span class="sc">$</span>Pertmat[[i]][, s], p, p))</span>
+<span id="cb21-48"><a href="#cb21-48" aria-hidden="true" tabindex="-1"></a>      post_SigmaMarginal_s[[i]] <span class="ot">&lt;-</span> Q_temp_inv <span class="sc">%*%</span> sharevar[[i]] <span class="sc">%*%</span> <span class="fu">t</span>(Q_temp_inv)</span>
+<span id="cb21-49"><a href="#cb21-49" aria-hidden="true" tabindex="-1"></a>      post_SigmaLambda_s[[i]] <span class="ot">&lt;-</span> post_SigmaMarginal_s[[i]] <span class="sc">-</span> sharevar[[i]]</span>
+<span id="cb21-50"><a href="#cb21-50" aria-hidden="true" tabindex="-1"></a>      Psi[[i]] <span class="ot">&lt;-</span> <span class="fu">diag</span>(fit<span class="sc">$</span>Errorsigma[[i]]<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb21-51"><a href="#cb21-51" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb21-52"><a href="#cb21-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-53"><a href="#cb21-53" aria-hidden="true" tabindex="-1"></a>    est_SigmaMarginal[[s]] <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="st">'+'</span>, post_SigmaMarginal_s) <span class="sc">/</span> npost</span>
+<span id="cb21-54"><a href="#cb21-54" aria-hidden="true" tabindex="-1"></a>    est_SigmaLambdaList[[s]] <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="st">'+'</span>, post_SigmaLambda_s) <span class="sc">/</span> npost</span>
+<span id="cb21-55"><a href="#cb21-55" aria-hidden="true" tabindex="-1"></a>    est_Psi_list[[s]] <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="st">'+'</span>, Psi) <span class="sc">/</span> npost</span>
+<span id="cb21-56"><a href="#cb21-56" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb21-57"><a href="#cb21-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-58"><a href="#cb21-58" aria-hidden="true" tabindex="-1"></a>  est_Psi <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="st">'+'</span>, est_Psi_list) <span class="sc">/</span> S</span>
+<span id="cb21-59"><a href="#cb21-59" aria-hidden="true" tabindex="-1"></a>  est_SigmaPhi <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="st">'+'</span>, sharevar) <span class="sc">/</span> npost</span>
+<span id="cb21-60"><a href="#cb21-60" aria-hidden="true" tabindex="-1"></a>  est_Q <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="st">'+'</span>, fit<span class="sc">$</span>Pertmat) <span class="sc">/</span> npost</span>
+<span id="cb21-61"><a href="#cb21-61" aria-hidden="true" tabindex="-1"></a>  est_Q_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span>S, <span class="cf">function</span>(s) <span class="fu">matrix</span>(est_Q[, s], p, p))</span>
+<span id="cb21-62"><a href="#cb21-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-63"><a href="#cb21-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(</span>
+<span id="cb21-64"><a href="#cb21-64" aria-hidden="true" tabindex="-1"></a>    <span class="at">Phi =</span> est_Phi,</span>
+<span id="cb21-65"><a href="#cb21-65" aria-hidden="true" tabindex="-1"></a>    <span class="at">SigmaPhi =</span> est_SigmaPhi,</span>
+<span id="cb21-66"><a href="#cb21-66" aria-hidden="true" tabindex="-1"></a>    <span class="at">Psi =</span> est_Psi,</span>
+<span id="cb21-67"><a href="#cb21-67" aria-hidden="true" tabindex="-1"></a>    <span class="at">Q =</span> est_Q_list,</span>
+<span id="cb21-68"><a href="#cb21-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">LambdaList =</span> est_speLoad,</span>
+<span id="cb21-69"><a href="#cb21-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">SigmaLambdaList =</span> est_SigmaLambdaList,</span>
+<span id="cb21-70"><a href="#cb21-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">SigmaMarginal =</span> est_SigmaMarginal,</span>
+<span id="cb21-71"><a href="#cb21-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">mode_k =</span> mode_k,</span>
+<span id="cb21-72"><a href="#cb21-72" aria-hidden="true" tabindex="-1"></a>    <span class="at">kept_samples =</span> <span class="fu">length</span>(keep_idx)</span>
+<span id="cb21-73"><a href="#cb21-73" aria-hidden="true" tabindex="-1"></a>  ))</span>
+<span id="cb21-74"><a href="#cb21-74" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb21-75"><a href="#cb21-75" aria-hidden="true" tabindex="-1"></a>res_PFA <span class="ot">&lt;-</span> <span class="fu">post_PFA</span>(fit_PFA)</span>
+<span id="cb21-76"><a href="#cb21-76" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(res_PFA, <span class="st">"Data/Rnutrition_PFA.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># columns have all loadings less than 10^-3</span></span>
@@ -931,13 +956,13 @@ Number of negative values: 6707 </code></pre>
 <span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"BMSFA: "</span>, mse_BMSFA <span class="sc">%&gt;%</span> <span class="fu">round</span>(<span class="dv">3</span>)))</span>
 <span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste0</span>(<span class="st">"Tetris: "</span>, mse_Tetris <span class="sc">%&gt;%</span> <span class="fu">round</span>(<span class="dv">3</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "Stack FA: 0.482"
-[1] "Ind FA: 0.462"
-[1] "PFA: 0.672"
-[1] "MOM-SS: 0.455"
-[1] "SUFA: 0.421"
-[1] "BMSFA: 0.437"
-[1] "Tetris: 0.266"</code></pre>
+<pre><code>[1] "Stack FA: 0.502"
+[1] "Ind FA: 0.485"
+[1] "PFA: 0.683"
+[1] "MOM-SS: 0.474"
+[1] "SUFA: 0.437"
+[1] "BMSFA: 0.456"
+[1] "Tetris: 0.287"</code></pre>
 </div>
 </div>
 

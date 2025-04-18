@@ -328,7 +328,7 @@ r= 5000 </code></pre>
 <p><strong>Step 3: Post-processing</strong></p>
 <p>We use <code>sp_OP</code> to apply orthogonal Procrustes rotation to the posterior samples of the common loading matrix <span class="math inline">\(\Phi\)</span> and the study-specific loading matrices <span class="math inline">\(\Lambda_s\)</span>. The function <code>sp_OP</code> is from the <code>MSFA</code> package.</p>
 <p>Common covariance and study-specific covariance matrices are calculated by the cross-product of the loading matrices.</p>
-<p>The marginal covariance matrix is calculated by <span class="math inline">\(\Sigma_s = \Phi \Phi^T + \sum_{s=1}^S \Lambda_s \Lambda_s^T + diag(\Psi_s)\)</span>, where <span class="math inline">\(\Psi_s\)</span> is the diagonal matrix of the residual variances for study <span class="math inline">\(s\)</span>.</p>
+<p>The marginal covariance matrix is calculated by <span class="math inline">\(\Sigma_s = \Phi \Phi^T +  \Lambda_s \Lambda_s^T + diag(\Psi_s)\)</span>, where <span class="math inline">\(\Psi_s\)</span> is the diagonal matrix of the residual variances for study <span class="math inline">\(s\)</span>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="co"># for data wrangling</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>post_BMSFA <span class="ot">&lt;-</span> <span class="cf">function</span>(fit){</span>
@@ -404,13 +404,13 @@ r= 5000 </code></pre>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># For example, view the loading matrix</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(out2<span class="sc">$</span>Phi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>           [,1]        [,2]        [,3]       [,4]
-[1,] -1.2627914  0.03270630  0.03203785 0.07079148
-[2,] -1.2444641 -0.07876412 -0.21085340 0.06093017
-[3,] -0.9629493 -0.25538902 -0.21280986 0.08168737
-[4,] -0.7452029 -0.14038770 -0.25463829 0.10165682
-[5,] -0.4866598 -0.26025878 -0.22924653 0.04886630
-[6,] -0.3681967 -0.38394504 -0.26743212 0.08192660</code></pre>
+<pre><code>            [,1]         [,2]       [,3]      [,4]
+[1,]  0.16952713  0.020636365 -1.1875126 0.3430111
+[2,] -0.08185122  0.117941438 -1.2051410 0.3426028
+[3,] -0.24166569  0.009744298 -0.9142091 0.3266155
+[4,] -0.23449935  0.057977792 -0.7576149 0.1696956
+[5,] -0.30719242  0.025246159 -0.4643306 0.2115390
+[6,] -0.42761733 -0.030917582 -0.3497078 0.2136760</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(out2<span class="sc">$</span>Phi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
